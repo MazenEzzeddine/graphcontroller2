@@ -24,15 +24,6 @@ public class QueryForBF {
     static double  queryForBF(String topici, String topico)
             throws ExecutionException, InterruptedException {
         HttpClient client = HttpClient.newHttpClient();
-/*        String testtopic1i = "http://prometheus-operated:9090/api/v1/query?" +
-                "query=testtopic1i";
-        String testtopic2 = "http://prometheus-operated:9090/api/v1/query?" +
-                "query=testtopic2";
-        String testtopic2i = "http://prometheus-operated:9090/api/v1/query?" +
-                "query=testtopic2i";
-        String testtopic3 = "http://prometheus-operated:9090/api/v1/query?" +
-                "query=testtopic3";*/
-
 
         String testtopic1i = "http://prometheus-operated:9090/api/v1/query?" +
                 "query="+ topici;
