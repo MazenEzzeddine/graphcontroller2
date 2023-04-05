@@ -60,8 +60,10 @@ public class QueryForBF {
             rate[i++]= parseJson(cf.get());
         }
 
+        if(rate[1]==0| rate[0]== 0) return 0.0;
 
-        try {
+
+    try {
             return rate[1]/rate[0];
         } catch (Exception e) {
             log.info("looks like no data, division by zero");

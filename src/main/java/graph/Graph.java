@@ -15,12 +15,6 @@ public class Graph {
 
 
 
-    public String logBF() {
-        return "Graph{" +
-                "BF=" + Arrays.toString(BF) +
-                '}';
-    }
-
     private  double[][] BF;
 
     public double[][] getBF() {
@@ -30,10 +24,6 @@ public class Graph {
     public void setBF(int i, int j, double value) {
        BF[i][j]=value;
     }
-
-
-
-
 
     public int[][] getAdjMat() {
         return adjMat;
@@ -83,7 +73,7 @@ public class Graph {
                    // System.out.print(vet);
                     s.push(vet);
                 } else {
-                   topoStack.push( s.pop());
+                   topoStack.push(s.pop());
                 }
             }
         return  topoStack;

@@ -19,7 +19,6 @@ public class ConsumerGroup {
     double dynamicAverageMaxConsumptionRate;
     double wsla = 2;
     Instant lastUpScaleDecision = Instant.now();
-    Double branchFactor;
 
     public ConsumerGroup(String inputTopic, Integer size, double dynamicAverageMaxConsumptionRate, double wsla, String name, String kname) {
         this.inputTopic = inputTopic;
@@ -34,12 +33,7 @@ public class ConsumerGroup {
         }
     }
 
-    public Double getBranchFactor() {
-        return branchFactor;
-    }
-    public void setBranchFactor(Double branchFactor) {
-        this.branchFactor = branchFactor;
-    }
+
     public String getKafkaName() {
         return kafkaName;
     }

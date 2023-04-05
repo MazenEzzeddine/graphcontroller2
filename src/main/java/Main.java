@@ -4,6 +4,8 @@ import group.ConsumerGroup;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
@@ -57,7 +59,7 @@ public class Main {
             log.info("Sleeping for 5 seconds");
             log.info("******************************************");
             log.info("******************************************");
-            Thread.sleep(30000);
+            Thread.sleep(5000);
         }
     }
 
@@ -77,6 +79,10 @@ public class Main {
         for (int m = 0; m < topoOrder.size(); m++) {
             log.info("Vertex/CG number {} in topo order is {}", m, topoOrder.get(m).getG());
             getArrivalRate(g, m);
+            if (Duration.between(topoOrder.get(m).getG().getLastUpScaleDecision(), Instant.now()).getSeconds() > 15) {
+                //queryconsumergroups.QueryRate.queryConsumerGroup();
+                BinPack.scaleAsPerBinPack(topoOrder.get(m).getG());
+            }
         }
 
         // ArrivalRates.arrivalRateTopic1(g);
