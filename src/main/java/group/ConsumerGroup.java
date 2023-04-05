@@ -93,6 +93,10 @@ public class ConsumerGroup {
     }
     public void setTotalLag(double totalLag) {
         this.totalLag = totalLag;
+
+        for (int i = 0; i < 5; i++) {
+            topicpartitions.get(i).setLag((long)(totalLag/5));
+        }
     }
 
 }
