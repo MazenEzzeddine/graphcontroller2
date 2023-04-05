@@ -2,6 +2,7 @@ package graph;
 
 import group.ConsumerGroup;
 
+import java.util.Arrays;
 import java.util.Stack;
 
 public class Graph {
@@ -13,6 +14,27 @@ public class Graph {
     private final Stack<Vertex> topoStack;
 
 
+
+    public String logBF() {
+        return "Graph{" +
+                "BF=" + Arrays.toString(BF) +
+                '}';
+    }
+
+    private  double[][] BF;
+
+    public double[][] getBF() {
+        return BF;
+    }
+
+    public void setBF(int i, int j, double value) {
+       BF[i][j]=value;
+    }
+
+
+
+
+
     public int[][] getAdjMat() {
         return adjMat;
     }
@@ -22,6 +44,8 @@ public class Graph {
         nV = 0; // counter for the vertices we will work with 1
         V = new Vertex[vMax];
         adjMat = new int[vMax][vMax];
+        BF = new double[vMax][vMax];
+
         s = new Stack<>();
         topoStack = new Stack<>();
     }

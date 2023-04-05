@@ -26,8 +26,8 @@ public class QueryForBF {
         HttpClient client = HttpClient.newHttpClient();
 
         String testtopic1i = "http://prometheus-operated:9090/api/v1/query?" +
-                "query="+ topici;
-        String testtopic2 = "http://prometheus-operated:9090/api/v1/query?query=" + topico;
+                "query=sum("+ topici+")";
+        String testtopic2 = "http://prometheus-operated:9090/api/v1/query?query=sum(" + topico + ")";
 
 
 
@@ -56,7 +56,7 @@ public class QueryForBF {
         int i=0;
 
         for (CompletableFuture<String> cf :  results) {
-            System.out.println(parseJson(cf.get()));
+            //System.out.println(parseJson(cf.get()));
             rate[i++]= parseJson(cf.get());
         }
 
