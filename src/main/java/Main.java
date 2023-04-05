@@ -81,7 +81,7 @@ public class Main {
             getArrivalRate(g, m);
             if (Duration.between(topoOrder.get(m).getG().getLastUpScaleDecision(), Instant.now()).getSeconds() > 15) {
                 //queryconsumergroups.QueryRate.queryConsumerGroup();
-                BinPack.scaleAsPerBinPack(topoOrder.get(m).getG());
+                BinPack2.scaleAsPerBinPack(topoOrder.get(m).getG());
             }
         }
 
