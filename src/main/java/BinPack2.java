@@ -58,7 +58,7 @@ public class BinPack2 {
 
         long maxLagCapacity;
         maxLagCapacity = (long) (g.getDynamicAverageMaxConsumptionRate() * g.getWsla());
-        consumers.add(new Consumer((String.valueOf(consumerCount)), maxLagCapacity, g.getDynamicAverageMaxConsumptionRate()));
+        double dynamicAverageMaxConsumptionRate = g.getDynamicAverageMaxConsumptionRate();
 
 
         for (Partition partition : parts) {
@@ -82,14 +82,17 @@ public class BinPack2 {
         //start the bin pack FFD with sort
         Collections.sort(parts, Collections.reverseOrder());
 
-        Consumer consumer;
-
-
-       // for (Partition partition : parts) {
         while(true) {
             int j;
+            consumers.clear();
+            for (int t = 0; t < consumerCount; t++) {
+                consumers.add(new Consumer((String.valueOf(t)), maxLagCapacity,
+                        dynamicAverageMaxConsumptionRate));
+            }
+
             for (j = 0; j < parts.size() ; j++) {
                 int i;
+                Collections.sort(consumers);
                 for (i = 0; i < consumerCount; i++) {
 
                     if (consumers.get(i).getRemainingLagCapacity() >= parts.get(j).getLag() &&
@@ -100,13 +103,8 @@ public class BinPack2 {
                 }
                 if (i == consumerCount) {
                     consumerCount++;
-                    consumer = new Consumer((String.valueOf(consumerCount)), (long) (g.getDynamicAverageMaxConsumptionRate() * g.getWsla()),
-                            g.getDynamicAverageMaxConsumptionRate());
-                    consumers.add(consumer);
-                    consumers.get(i).assignPartition(parts.get(j));
-
+                    break;
                 }
-
             }
             if(j==parts.size())
                 break;
@@ -128,7 +126,6 @@ public class BinPack2 {
 
         long maxLagCapacity;
         maxLagCapacity = (long) (dynamicAverageMaxConsumptionRate * g.getWsla());
-        consumers.add(new Consumer((String.valueOf(consumerCount)), maxLagCapacity, dynamicAverageMaxConsumptionRate));
 
         //if a certain partition has a lag higher than R Wmax set its lag to R*Wmax
         // atention to the window
@@ -152,11 +149,17 @@ public class BinPack2 {
         }
         //start the bin pack FFD with sort
         Collections.sort(parts, Collections.reverseOrder());
-        Consumer consumer;
         while(true) {
             int j;
+            consumers.clear();
+            for (int t = 0; t < consumerCount; t++) {
+                consumers.add(new Consumer((String.valueOf(consumerCount)), maxLagCapacity,
+                        dynamicAverageMaxConsumptionRate));
+            }
+
             for (j = 0; j < parts.size() ; j++) {
                 int i;
+                Collections.sort(consumers);
                 for (i = 0; i < consumerCount; i++) {
 
                     if (consumers.get(i).getRemainingLagCapacity() >= parts.get(j).getLag() &&
@@ -167,13 +170,8 @@ public class BinPack2 {
                 }
                 if (i == consumerCount) {
                     consumerCount++;
-                    consumer = new Consumer((String.valueOf(consumerCount)), (long) (g.getDynamicAverageMaxConsumptionRate() * g.getWsla()),
-                            g.getDynamicAverageMaxConsumptionRate());
-                    consumers.add(consumer);
-                    consumers.get(i).assignPartition(parts.get(j));
-
+                    break;
                 }
-
             }
             if(j==parts.size())
                 break;
