@@ -48,6 +48,7 @@ public class Constants {
          String topic1p4lag = "http://prometheus-operated:9090/api/v1/query?query=" +
                 "kafka_consumergroup_lag%7Bconsumergroup=%22"+gname+"%22,topic=%22" + topicName+"%22,partition=%224%22,namespace=%22default%22%7D";
 
+
          querieslag.add(topic1lag);
         querieslag.add(topic1p0lag);
         querieslag.add(topic1p1lag);
