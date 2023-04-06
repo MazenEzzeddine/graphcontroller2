@@ -110,7 +110,9 @@ public class Main {
                 //log.info( " {} {} is a prarent of {} {}", parent, g.getVertex(parent).getG() , m, g.getVertex(m).getG() );
                 //parentsArrivalRate += g.getVertex(parent).getG().getTotalArrivalRate();
                 grandParent = false;
-                totalArrivalRate += g.getVertex(parent).getG().getTotalArrivalRate() * g.getBF()[parent][m];
+                totalArrivalRate += (g.getVertex(parent).getG().getTotalArrivalRate() +
+                        (g.getVertex(parent).getG().getTotalLag()/(g.getVertex(parent).getG().getWsla())))
+                        * g.getBF()[parent][m];
             }
         }
 

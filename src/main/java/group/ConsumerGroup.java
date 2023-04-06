@@ -92,7 +92,12 @@ public class ConsumerGroup {
         return totalLag;
     }
     public void setTotalLag(double totalLag) {
+
+        double max = Math.max(totalArrivalRate, dynamicAverageMaxConsumptionRate*size);
+        totalLag = Math.max(totalLag - max, 0);
+
         this.totalLag = totalLag;
+
 
         for (int i = 0; i < 5; i++) {
             topicpartitions.get(i).setLag((long)(totalLag/5));
