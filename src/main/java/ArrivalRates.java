@@ -106,12 +106,6 @@ public class ArrivalRates {
         log.info("totalLag for topic {} {}", g.getInputTopic(), totallag2);
         g.setTotalLag(totallag2);
 
-
     }
-
-
-
-
-
 
 }

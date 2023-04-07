@@ -16,11 +16,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 public class QueryForBF {
-
-
     private static final Logger log = LogManager.getLogger(QueryForBF.class);
-
-
     static double  queryForBF(String topici, String topico)
             throws ExecutionException, InterruptedException {
         HttpClient client = HttpClient.newHttpClient();
@@ -28,8 +24,6 @@ public class QueryForBF {
         String testtopic1i = "http://prometheus-operated:9090/api/v1/query?" +
                 "query=sum("+ topici+")";
         String testtopic2 = "http://prometheus-operated:9090/api/v1/query?query=sum(" + topico + ")";
-
-
 
 
         List<URI> queries = new ArrayList<>();

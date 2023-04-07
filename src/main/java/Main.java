@@ -38,7 +38,7 @@ public class Main {
         g.addEdge(0, 1);
         g.addEdge(1, 2);
 
-        Stack<Vertex> ts = g.dfs(g.getVertex(0)); // 1 2 3 4 5
+        Stack<Vertex> ts = g.dfs(g.getVertex(0));
         List<Vertex> topoOrder = new ArrayList<>();
         //topological order
         while (!ts.isEmpty()) {
@@ -66,16 +66,11 @@ public class Main {
 
     static void QueryingPrometheus(Graph g, List<Vertex> topoOrder) throws ExecutionException, InterruptedException {
 
-
-
-
        /* ArrivalRates.arrivalRateTopic1(g);
         ArrivalRates.arrivalRateTopic2(g.getVertex(1).getG());
         ArrivalRates.arrivalRateTopic2(g.getVertex(2).getG());*/
 
-
         Util.computeBranchingFactors(g);
-
         for (int m = 0; m < topoOrder.size(); m++) {
             log.info("Vertex/CG number {} in topo order is {}", m, topoOrder.get(m).getG());
             getArrivalRate(g, m);
@@ -85,17 +80,6 @@ public class Main {
             }
         }
 
-        // ArrivalRates.arrivalRateTopic1(g);
-
-
-       /* for (int i = 0; i < topoOrder.size(); i++) {
-            log.info("Branch factor of ms  {} is {}", i, g.getVertex(i).getG().getBranchFactor());
-            getArrivalRate(g, i);
-            if (Duration.between(topoOrder.get(i).getG().getLastUpScaleDecision(), Instant.now()).getSeconds() > 15) {
-                //queryconsumergroups.QueryRate.queryConsumerGroup();
-                BinPack.scaleAsPerBinPack(topoOrder.get(i).getG());
-            }
-        }*/
     }
 
 
@@ -108,10 +92,9 @@ public class Main {
         for (int parent = 0; parent < A[m].length; parent++) {
             if (A[parent][m] == 1) {
                 //log.info( " {} {} is a prarent of {} {}", parent, g.getVertex(parent).getG() , m, g.getVertex(m).getG() );
-                //parentsArrivalRate += g.getVertex(parent).getG().getTotalArrivalRate();
                 grandParent = false;
-                totalArrivalRate += (g.getVertex(parent).getG().getTotalArrivalRate() +
-                        (g.getVertex(parent).getG().getTotalLag()/(g.getVertex(parent).getG().getWsla())))
+                totalArrivalRate += (g.getVertex(parent).getG().getTotalArrivalRate() /*+
+                        (g.getVertex(parent).getG().getTotalLag()/(g.getVertex(parent).getG().getWsla()))*/)
                         * g.getBF()[parent][m];
             }
         }
@@ -121,9 +104,7 @@ public class Main {
             log.info("Arrival rate of micorservice {} {}", m, g.getVertex(m).getG().getTotalArrivalRate());
         } else {
             g.getVertex(m).getG().setTotalArrivalRate(totalArrivalRate);
-
             log.info("Arrival rate of micorservice {} {}", m, g.getVertex(m).getG().getTotalArrivalRate());
-
         }
 
     }
