@@ -100,10 +100,12 @@ public class Main {
         }
 
         if (grandParent) {
-            ArrivalRates.arrivalRateTopicGeneral(g.getVertex(m).getG());
+            ArrivalRates.arrivalRateTopicGeneral(g.getVertex(m).getG(), false);
             log.info("Arrival rate of micorservice {} {}", m, g.getVertex(m).getG().getTotalArrivalRate());
         } else {
             g.getVertex(m).getG().setTotalArrivalRate(totalArrivalRate);
+            ArrivalRates.arrivalRateTopicGeneral(g.getVertex(m).getG(), true);
+
             log.info("Arrival rate of micorservice {} {}", m, g.getVertex(m).getG().getTotalArrivalRate());
         }
 
