@@ -20,15 +20,17 @@ public class Main {
         initialize();
     }
 
-
     private static void initialize() throws InterruptedException, ExecutionException {
         Graph g = new Graph(3);
 
-        ConsumerGroup g0 = new ConsumerGroup("testtopic1", 1, 175, 2,
+        ConsumerGroup g0 = new ConsumerGroup("testtopic1", 1,
+                175, 2,
                 "cons1persec", "testgroup1");
-        ConsumerGroup g1 = new ConsumerGroup("testtopic2", 1, 175, 2,
+        ConsumerGroup g1 = new ConsumerGroup("testtopic2", 1,
+                175, 2,
                 "cons1persec2", "testgroup2");
-        ConsumerGroup g2 = new ConsumerGroup("testtopic3", 1, 175, 2,
+        ConsumerGroup g2 = new ConsumerGroup("testtopic3", 1,
+                175, 2,
                 "cons1persec3", "testgroup3");
 
 
@@ -51,8 +53,6 @@ public class Main {
         log.info("Warming 30  seconds.");
         Thread.sleep(30 * 1000);
 
-        //Thread.sleep(30);
-
         while (true) {
             log.info("Querying Prometheus");
             Main.QueryingPrometheus(g, topoOrder);
@@ -64,7 +64,8 @@ public class Main {
     }
 
 
-    static void QueryingPrometheus(Graph g, List<Vertex> topoOrder) throws ExecutionException, InterruptedException {
+    static void QueryingPrometheus(Graph g, List<Vertex> topoOrder)
+            throws ExecutionException, InterruptedException {
 
        /* ArrivalRates.arrivalRateTopic1(g);
         ArrivalRates.arrivalRateTopic2(g.getVertex(1).getG());
@@ -74,12 +75,12 @@ public class Main {
         for (int m = 0; m < topoOrder.size(); m++) {
             log.info("Vertex/CG number {} in topo order is {}", m, topoOrder.get(m).getG());
             getArrivalRate(g, m);
-            if (Duration.between(topoOrder.get(m).getG().getLastUpScaleDecision(), Instant.now()).getSeconds() > 15) {
+            if (Duration.between(topoOrder.get(m).getG().getLastUpScaleDecision(),
+                    Instant.now()).getSeconds() > 15) {
                 //queryconsumergroups.QueryRate.queryConsumerGroup();
                 BinPack2.scaleAsPerBinPack(topoOrder.get(m).getG());
             }
         }
-
     }
 
 
@@ -105,7 +106,6 @@ public class Main {
         } else {
             g.getVertex(m).getG().setTotalArrivalRate(totalArrivalRate);
             ArrivalRates.arrivalRateTopicGeneral(g.getVertex(m).getG(), true);
-
             log.info("Arrival rate of micorservice {} {}", m, g.getVertex(m).getG().getTotalArrivalRate());
         }
 

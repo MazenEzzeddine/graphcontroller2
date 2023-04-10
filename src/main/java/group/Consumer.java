@@ -11,7 +11,8 @@ public class Consumer implements Comparable<Consumer> {
     private List<Partition> assignedPartitions;
     private Long remainingLagCapacity;
 
-    public Consumer(String id, Long lagCapacity, double arrivalCapacity) {
+    public Consumer(String id, Long lagCapacity,
+                    double arrivalCapacity) {
         this.lagCapacity = lagCapacity;
         this.arrivalCapacity = arrivalCapacity;
         this.id = id;

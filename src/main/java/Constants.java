@@ -3,11 +3,8 @@ import java.util.List;
 
 public class Constants {
 
-
    static List<String> getQueriesArrival(String topicName) {
-
        List<String> queries = new ArrayList<>();
-
          String topic1ar = "http://prometheus-operated:9090/api/v1/query?" +
                 "query=sum(rate(kafka_topic_partition_current_offset%7Btopic=%22"+ topicName+ "%22,namespace=%22default%22%7D%5B1m%5D))%20by%20(topic)";
          String topic1p0 = "http://prometheus-operated:9090/api/v1/query?" +
@@ -28,7 +25,6 @@ public class Constants {
          queries.add(topic1p3);
          queries.add(topic1p4);
          return queries;
-
    }
 
 
@@ -48,8 +44,7 @@ public class Constants {
          String topic1p4lag = "http://prometheus-operated:9090/api/v1/query?query=" +
                 "kafka_consumergroup_lag%7Bconsumergroup=%22"+gname+"%22,topic=%22" + topicName+"%22,partition=%224%22,namespace=%22default%22%7D";
 
-
-         querieslag.add(topic1lag);
+        querieslag.add(topic1lag);
         querieslag.add(topic1p0lag);
         querieslag.add(topic1p1lag);
         querieslag.add(topic1p2lag);

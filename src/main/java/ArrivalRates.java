@@ -17,9 +17,7 @@ import java.util.stream.Collectors;
 public class ArrivalRates {
     private static final Logger log = LogManager.getLogger(ArrivalRates.class);
 
-
     static void arrivalRateTopicGeneral(ConsumerGroup g, boolean justLag) {
-
         String topic = g.getInputTopic();
         String cg = g.getKafkaName();
         List<String> arrivalqueries = Constants.getQueriesArrival(topic);
@@ -52,20 +50,16 @@ public class ArrivalRates {
         }
         /////////////////////////////////////////////////////////////
 
+        List<CompletableFuture<String>> partitionslagfuture2 = partitionslag2.stream()
+                .map(target -> client
+                        .sendAsync(
+                                HttpRequest.newBuilder(target).GET().build(),
+                                HttpResponse.BodyHandlers.ofString())
+                        .thenApply(HttpResponse::body))
+                .collect(Collectors.toList());
 
 
-
-
-            List<CompletableFuture<String>> partitionslagfuture2 = partitionslag2.stream()
-                    .map(target -> client
-                            .sendAsync(
-                                    HttpRequest.newBuilder(target).GET().build(),
-                                    HttpResponse.BodyHandlers.ofString())
-                            .thenApply(HttpResponse::body))
-                    .collect(Collectors.toList());
-
-
-        if(! justLag) {
+        if (!justLag) {
             List<CompletableFuture<String>> partitionsfutures2 = partitions2.stream()
                     .map(target -> client
                             .sendAsync(
@@ -85,13 +79,15 @@ public class ArrivalRates {
                     e.printStackTrace();
                 }
 
-                g.getTopicpartitions().get(partition2).setArrivalRate(partitionArrivalRate2);
+                g.getTopicpartitions().get(partition2)
+                        .setArrivalRate(partitionArrivalRate2);
 
                 totalarrivalstopic2 += partitionArrivalRate2;
                 partition2++;
             }
             g.setTotalArrivalRate(totalarrivalstopic2);
-            log.info("totalArrivalRate for  topic  {} {}", g.getInputTopic(), totalarrivalstopic2);
+            log.info("totalArrivalRate for  topic  {} {}",
+                    g.getInputTopic(), totalarrivalstopic2);
         }
 
 

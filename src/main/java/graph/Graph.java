@@ -12,9 +12,6 @@ public class Graph {
     public int nV;
     private final Stack<Vertex> s;
     private final Stack<Vertex> topoStack;
-
-
-
     private  double[][] BF;
 
     public double[][] getBF() {
@@ -24,7 +21,6 @@ public class Graph {
     public void setBF(int i, int j, double value) {
        BF[i][j]=value;
     }
-
     public int[][] getAdjMat() {
         return adjMat;
     }
@@ -35,7 +31,6 @@ public class Graph {
         V = new Vertex[vMax];
         adjMat = new int[vMax][vMax];
         BF = new double[vMax][vMax];
-
         s = new Stack<>();
         topoStack = new Stack<>();
     }
