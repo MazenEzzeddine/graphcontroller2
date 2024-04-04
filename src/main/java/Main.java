@@ -24,13 +24,13 @@ public class Main {
         Graph g = new Graph(3);
 
         ConsumerGroup g0 = new ConsumerGroup("testtopic1", 1,
-                175, 2,
+                200, 2,
                 "cons1persec", "testgroup1");
         ConsumerGroup g1 = new ConsumerGroup("testtopic2", 1,
-                175, 2,
+                200, 2,
                 "cons1persec2", "testgroup2");
         ConsumerGroup g2 = new ConsumerGroup("testtopic3", 1,
-                175, 2,
+                200, 2,
                 "cons1persec3", "testgroup3");
 
 
