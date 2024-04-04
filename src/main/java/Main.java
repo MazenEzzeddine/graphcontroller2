@@ -76,7 +76,7 @@ public class Main {
             log.info("Vertex/CG number {} in topo order is {}", m, topoOrder.get(m).getG());
             getArrivalRate(g, m);
             if (Duration.between(topoOrder.get(m).getG().getLastUpScaleDecision(),
-                    Instant.now()).getSeconds() > 15) {
+                    Instant.now()).getSeconds() > 3) {
                 //queryconsumergroups.QueryRate.queryConsumerGroup();
                 BinPack2.scaleAsPerBinPack(topoOrder.get(m).getG());
             }
