@@ -11,10 +11,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class BinPack {
+public class BinPack2 {
 
 
-    private static final Logger log = LogManager.getLogger(BinPack.class);
+    private static final Logger log = LogManager.getLogger(BinPack2.class);
 
     public static void scaleAsPerBinPack(ConsumerGroup g) {
         log.info("Currently we have this number of consumers group {} {}", g.getKafkaName(), g.getSize());
@@ -58,7 +58,7 @@ public class BinPack {
 
         long maxLagCapacity;
         maxLagCapacity = (long) (g.getDynamicAverageMaxConsumptionRate() * g.getWsla());
-        consumers.add(new Consumer((String.valueOf(consumerCount)), maxLagCapacity, g.getDynamicAverageMaxConsumptionRate()));
+        double dynamicAverageMaxConsumptionRate = g.getDynamicAverageMaxConsumptionRate();
 
 
         for (Partition partition : parts) {
@@ -82,28 +82,32 @@ public class BinPack {
         //start the bin pack FFD with sort
         Collections.sort(parts, Collections.reverseOrder());
 
-        Consumer consumer;
+        while(true) {
+            int j;
+            consumers.clear();
+            for (int t = 0; t < consumerCount; t++) {
+                consumers.add(new Consumer((String.valueOf(t)), maxLagCapacity,
+                        dynamicAverageMaxConsumptionRate));
+            }
 
+            for (j = 0; j < parts.size() ; j++) {
+                int i;
+                Collections.sort(consumers);
+                for (i = 0; i < consumerCount; i++) {
 
-        for (Partition partition : parts) {
-            int i;
-            for ( i = 0; i < consumerCount; i++) {
-
-                if ( consumers.get(i).getRemainingLagCapacity() >=  partition.getLag()  &&
-                        consumers.get(i).getRemainingArrivalCapacity() >= partition.getArrivalRate()) {
-                    consumers.get(i).assignPartition(partition);
+                    if (consumers.get(i).getRemainingLagCapacity() >= parts.get(j).getLag() &&
+                            consumers.get(i).getRemainingArrivalCapacity() >= parts.get(j).getArrivalRate()) {
+                        consumers.get(i).assignPartition(parts.get(j));
+                        break;
+                    }
+                }
+                if (i == consumerCount) {
+                    consumerCount++;
                     break;
                 }
             }
-            if (i==consumerCount ) {
-                consumerCount++;
-                consumer = new Consumer((String.valueOf(consumerCount)), (long) (g.getDynamicAverageMaxConsumptionRate() * g.getWsla()),
-                        g.getDynamicAverageMaxConsumptionRate());
-                consumers.add(consumer);
-                consumers.get(i).assignPartition(partition);
-
-            }
-
+            if(j==parts.size())
+                break;
         }
         log.info(" The BP up scaler recommended for group {} {}",g.getKafkaName(), consumers.size());
         return consumers.size();
@@ -122,7 +126,6 @@ public class BinPack {
 
         long maxLagCapacity;
         maxLagCapacity = (long) (dynamicAverageMaxConsumptionRate * g.getWsla());
-        consumers.add(new Consumer((String.valueOf(consumerCount)), maxLagCapacity, dynamicAverageMaxConsumptionRate));
 
         //if a certain partition has a lag higher than R Wmax set its lag to R*Wmax
         // atention to the window
@@ -146,24 +149,32 @@ public class BinPack {
         }
         //start the bin pack FFD with sort
         Collections.sort(parts, Collections.reverseOrder());
-        Consumer consumer;
-        for (Partition partition : parts) {
-            int i;
-            for ( i = 0; i < consumerCount; i++) {
+        while(true) {
+            int j;
+            consumers.clear();
+            for (int t = 0; t < consumerCount; t++) {
+                consumers.add(new Consumer((String.valueOf(consumerCount)), maxLagCapacity,
+                        dynamicAverageMaxConsumptionRate));
+            }
 
-                if ( consumers.get(i).getRemainingLagCapacity() >=  partition.getLag()  &&
-                        consumers.get(i).getRemainingArrivalCapacity() >= partition.getArrivalRate()) {
-                    consumers.get(i).assignPartition(partition);
+            for (j = 0; j < parts.size() ; j++) {
+                int i;
+                Collections.sort(consumers);
+                for (i = 0; i < consumerCount; i++) {
+
+                    if (consumers.get(i).getRemainingLagCapacity() >= parts.get(j).getLag() &&
+                            consumers.get(i).getRemainingArrivalCapacity() >= parts.get(j).getArrivalRate()) {
+                        consumers.get(i).assignPartition(parts.get(j));
+                        break;
+                    }
+                }
+                if (i == consumerCount) {
+                    consumerCount++;
                     break;
                 }
             }
-            if(i == consumerCount) {
-                consumerCount++;
-                consumer = new Consumer((String.valueOf(consumerCount)), maxLagCapacity,
-                        dynamicAverageMaxConsumptionRate);
-                consumer.assignPartition(partition);
-                consumers.add(consumer);
-            }
+            if(j==parts.size())
+                break;
         }
 
         log.info(" The BP down scaler recommended  for group {} {}",g.getKafkaName(), consumers.size());

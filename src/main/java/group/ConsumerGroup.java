@@ -20,7 +20,9 @@ public class ConsumerGroup {
     double wsla = 2;
     Instant lastUpScaleDecision = Instant.now();
 
-    public ConsumerGroup(String inputTopic, Integer size, double dynamicAverageMaxConsumptionRate, double wsla, String name, String kname) {
+    public ConsumerGroup(String inputTopic, Integer size,
+                         double dynamicAverageMaxConsumptionRate,
+                         double wsla, String name, String kname) {
         this.inputTopic = inputTopic;
         this.size = size;
         this.dynamicAverageMaxConsumptionRate = dynamicAverageMaxConsumptionRate;
@@ -61,7 +63,6 @@ public class ConsumerGroup {
     public double getWsla() {
         return wsla;
     }
-
     public Instant getLastUpScaleDecision() {
         return lastUpScaleDecision;
     }
@@ -85,6 +86,7 @@ public class ConsumerGroup {
 
         for (int i = 0; i < 5; i++) {
            topicpartitions.get(i).setArrivalRate(totalArrivalRate/5.0);
+            //log.info("Arrival rate for partition {} is {}", i, topicpartitions.get(i).getArrivalRate());
         }
     }
 
@@ -92,7 +94,14 @@ public class ConsumerGroup {
         return totalLag;
     }
     public void setTotalLag(double totalLag) {
-        this.totalLag = totalLag;
-    }
 
+        double max = Math.max(totalArrivalRate, dynamicAverageMaxConsumptionRate*size);
+        totalLag = Math.max(totalLag - max, 0);
+
+        this.totalLag = totalLag;
+       for (int i = 0; i < 5; i++) {
+            topicpartitions.get(i).setLag((long)(totalLag/5));
+        }
+           // log.info("Lag for partition {} is {}", i, topicpartitions.get(i).getLag());
+        }
 }

@@ -17,7 +17,9 @@ import java.util.stream.Collectors;
 public class ArrivalRates {
     private static final Logger log = LogManager.getLogger(ArrivalRates.class);
 
-    static void arrivalRateTopicGeneral(ConsumerGroup g, boolean justLag) {
+
+    static void arrivalRateTopicGeneral(ConsumerGroup g) {
+
         String topic = g.getInputTopic();
         String cg = g.getKafkaName();
         List<String> arrivalqueries = Constants.getQueriesArrival(topic);
@@ -50,6 +52,15 @@ public class ArrivalRates {
         }
         /////////////////////////////////////////////////////////////
 
+        List<CompletableFuture<String>> partitionsfutures2 = partitions2.stream()
+                .map(target -> client
+                        .sendAsync(
+                                HttpRequest.newBuilder(target).GET().build(),
+                                HttpResponse.BodyHandlers.ofString())
+                        .thenApply(HttpResponse::body))
+                .collect(Collectors.toList());
+
+
         List<CompletableFuture<String>> partitionslagfuture2 = partitionslag2.stream()
                 .map(target -> client
                         .sendAsync(
@@ -59,39 +70,25 @@ public class ArrivalRates {
                 .collect(Collectors.toList());
 
 
-        if (!justLag) {
-            List<CompletableFuture<String>> partitionsfutures2 = partitions2.stream()
-                    .map(target -> client
-                            .sendAsync(
-                                    HttpRequest.newBuilder(target).GET().build(),
-                                    HttpResponse.BodyHandlers.ofString())
-                            .thenApply(HttpResponse::body))
-                    .collect(Collectors.toList());
-
-
-            int partition2 = 0;
-            double totalarrivalstopic2 = 0.0;
-            double partitionArrivalRate2 = 0.0;
-            for (CompletableFuture<String> cf : partitionsfutures2) {
-                try {
-                    partitionArrivalRate2 = Util.parseJsonArrivalRate(cf.get(), partition2);
-                } catch (InterruptedException | ExecutionException e) {
-                    e.printStackTrace();
-                }
-
-                g.getTopicpartitions().get(partition2)
-                        .setArrivalRate(partitionArrivalRate2);
-
-                totalarrivalstopic2 += partitionArrivalRate2;
-                partition2++;
-            }
-            g.setTotalArrivalRate(totalarrivalstopic2);
-            log.info("totalArrivalRate for  topic  {} {}",
-                    g.getInputTopic(), totalarrivalstopic2);
-        }
-
-
         int partition2 = 0;
+        double totalarrivalstopic2 = 0.0;
+        double partitionArrivalRate2 = 0.0;
+        for (CompletableFuture<String> cf : partitionsfutures2) {
+            try {
+                partitionArrivalRate2 = Util.parseJsonArrivalRate(cf.get(), partition2);
+            } catch (InterruptedException | ExecutionException e) {
+                e.printStackTrace();
+            }
+
+            g.getTopicpartitions().get(partition2).setArrivalRate(partitionArrivalRate2);
+
+            totalarrivalstopic2 += partitionArrivalRate2;
+            partition2++;
+        }
+        g.setTotalArrivalRate(totalarrivalstopic2);
+        log.info("totalArrivalRate for  topic  {} {}", g.getInputTopic() , totalarrivalstopic2);
+
+        partition2 = 0;
         double totallag2 = 0.0;
         long partitionLag2 = 0L;
 
@@ -109,6 +106,10 @@ public class ArrivalRates {
         log.info("totalLag for topic {} {}", g.getInputTopic(), totallag2);
         g.setTotalLag(totallag2);
 
+
     }
+
+
+
 
 }

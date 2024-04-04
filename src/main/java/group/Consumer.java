@@ -3,7 +3,7 @@ package group;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Consumer {
+public class Consumer implements Comparable<Consumer> {
     private final Long lagCapacity;
     private final double arrivalCapacity;
     private final String id;
@@ -11,7 +11,8 @@ public class Consumer {
     private List<Partition> assignedPartitions;
     private Long remainingLagCapacity;
 
-    public Consumer(String id, Long lagCapacity, double arrivalCapacity) {
+    public Consumer(String id, Long lagCapacity,
+                    double arrivalCapacity) {
         this.lagCapacity = lagCapacity;
         this.arrivalCapacity = arrivalCapacity;
         this.id = id;
@@ -67,4 +68,8 @@ public class Consumer {
         return assignedPartitions;
     }
 
+    @Override
+    public int compareTo(Consumer o) {
+        return Double.compare(this.remainingArrivalCapacity , o.remainingArrivalCapacity);
+    }
 }
