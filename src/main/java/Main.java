@@ -25,13 +25,13 @@ public class Main {
 
         ConsumerGroup g0 = new ConsumerGroup("testtopic1", 1,
                 200, 2,
-                "cons1persec", "testgroup1");
+                "latency1", "testgroup1");
         ConsumerGroup g1 = new ConsumerGroup("testtopic2", 1,
                 200, 2,
-                "cons1persec2", "testgroup2");
+                "latency2", "testgroup2");
         ConsumerGroup g2 = new ConsumerGroup("testtopic3", 1,
                 200, 2,
-                "cons1persec3", "testgroup3");
+                "latency3", "testgroup3");
 
 
         g.addVertex(0, g0);
@@ -59,7 +59,7 @@ public class Main {
             log.info("Sleeping for 5 seconds");
             log.info("******************************************");
             log.info("******************************************");
-            Thread.sleep(5000);
+            Thread.sleep(1000);
         }
     }
 

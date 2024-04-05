@@ -16,6 +16,10 @@ public class BinPack2 {
 
     private static final Logger log = LogManager.getLogger(BinPack2.class);
 
+
+    static float fup = 0.9f;
+    static float fdown= 0.4f;
+
     public static void scaleAsPerBinPack(ConsumerGroup g) {
         log.info("Currently we have this number of consumers group {} {}", g.getKafkaName(), g.getSize());
         int neededsize = binPackAndScale(g);
@@ -57,7 +61,7 @@ public class BinPack2 {
 
 
         long maxLagCapacity;
-        maxLagCapacity = (long) (g.getDynamicAverageMaxConsumptionRate() * g.getWsla());
+        maxLagCapacity = (long) (g.getDynamicAverageMaxConsumptionRate() * g.getWsla() * fup);
         double dynamicAverageMaxConsumptionRate = g.getDynamicAverageMaxConsumptionRate();
 
 
@@ -122,7 +126,7 @@ public class BinPack2 {
         List<Consumer> consumers = new ArrayList<>();
         int consumerCount = 1;
         List<Partition> parts = new ArrayList<>(g.getTopicpartitions());
-      double dynamicAverageMaxConsumptionRate = g.getDynamicAverageMaxConsumptionRate()*0.6;
+      double dynamicAverageMaxConsumptionRate = g.getDynamicAverageMaxConsumptionRate()*fdown;
 
         long maxLagCapacity;
         maxLagCapacity = (long) (dynamicAverageMaxConsumptionRate * g.getWsla());
