@@ -62,7 +62,7 @@ public class BinPack2 {
 
         long maxLagCapacity;
         maxLagCapacity = (long) (g.getDynamicAverageMaxConsumptionRate() * g.getWsla() * fup);
-        double dynamicAverageMaxConsumptionRate = g.getDynamicAverageMaxConsumptionRate();
+        double dynamicAverageMaxConsumptionRate = g.getDynamicAverageMaxConsumptionRate()*fup;
 
 
         for (Partition partition : parts) {

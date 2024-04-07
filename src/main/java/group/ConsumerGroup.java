@@ -86,7 +86,7 @@ public class ConsumerGroup {
 
         for (int i = 0; i < 5; i++) {
            topicpartitions.get(i).setArrivalRate(totalArrivalRate/5.0);
-            //log.info("Arrival rate for partition {} is {}", i, topicpartitions.get(i).getArrivalRate());
+            log.info("Arrival rate for partition {} is {}", i, topicpartitions.get(i).getArrivalRate());
         }
     }
 
@@ -101,6 +101,7 @@ public class ConsumerGroup {
         this.totalLag = totalLag;
        for (int i = 0; i < 5; i++) {
             topicpartitions.get(i).setLag((long)(totalLag/5));
+           log.info("Lag for partition {} is {}", i, topicpartitions.get(i).getLag());
         }
            // log.info("Lag for partition {} is {}", i, topicpartitions.get(i).getLag());
         }

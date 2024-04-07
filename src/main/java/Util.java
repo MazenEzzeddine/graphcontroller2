@@ -44,7 +44,7 @@ public class Util {
 
         int [][] A = g.getAdjMat();
 
-        for (int parent = 0; parent < A.length ;parent++) {
+     /*   for (int parent = 0; parent < A.length ;parent++) {
         for (int child = 0; child < A[parent].length; child++) {
             if (A[parent][child] == 1) {
                 double bf =  QueryForBF.queryForBF(g.getVertex(parent).getG().getInputTopic()+"Total",
@@ -53,6 +53,17 @@ public class Util {
                 log.info("BF[{}][{}]={}", parent, child, g.getBF()[parent][child]);
             }
         }
+        }
+*/
+
+
+        for (int parent = 0; parent < A.length ;parent++) {
+            for (int child = 0; child < A[parent].length; child++) {
+                if (A[parent][child] == 1) {
+                    g.setBF(parent,child, 1.0);
+                    log.info("BF[{}][{}]={}", parent, child, g.getBF()[parent][child]);
+                }
+            }
         }
 
     }

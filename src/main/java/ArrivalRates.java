@@ -17,13 +17,17 @@ import java.util.stream.Collectors;
 public class ArrivalRates {
     private static final Logger log = LogManager.getLogger(ArrivalRates.class);
 
+
+    static  HttpClient client = HttpClient.newHttpClient();
+
+
+
     static void arrivalRateTopicGeneral(ConsumerGroup g, boolean justLag) {
         String topic = g.getInputTopic();
         String cg = g.getKafkaName();
         List<String> arrivalqueries = Constants.getQueriesArrival(topic);
         List<String> lagqueries = Constants.getQueriesLag(topic, cg);
 
-        HttpClient client = HttpClient.newHttpClient();
         List<URI> partitions2 = new ArrayList<>();
         try {
             partitions2 = Arrays.asList(
@@ -84,6 +88,7 @@ public class ArrivalRates {
 
                 totalarrivalstopic2 += partitionArrivalRate2;
                 partition2++;
+                //log.info("arrival rate into partition {} is  {}:", partition2,partitionArrivalRate2);
             }
             g.setTotalArrivalRate(totalarrivalstopic2);
             log.info("totalArrivalRate for  topic  {} {}",
@@ -105,6 +110,7 @@ public class ArrivalRates {
             g.getTopicpartitions().get(partition2).setLag(partitionLag2);
             totallag2 += partitionLag2;
             partition2++;
+            //log.info("lag of partition {} is {} :", partition2, partitionLag2);
         }
         log.info("totalLag for topic {} {}", g.getInputTopic(), totallag2);
         g.setTotalLag(totallag2);

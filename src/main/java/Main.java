@@ -21,24 +21,24 @@ public class Main {
     }
 
     private static void initialize() throws InterruptedException, ExecutionException {
-        Graph g = new Graph(3);
+        Graph g = new Graph(2);
 
         ConsumerGroup g0 = new ConsumerGroup("testtopic1", 1,
-                200, 2,
+                200, 1,
                 "latency1", "testgroup1");
         ConsumerGroup g1 = new ConsumerGroup("testtopic2", 1,
-                200, 2,
+                200, 1,
                 "latency2", "testgroup2");
-        ConsumerGroup g2 = new ConsumerGroup("testtopic3", 1,
+  /*      ConsumerGroup g2 = new ConsumerGroup("testtopic3", 1,
                 200, 2,
-                "latency3", "testgroup3");
+                "latency3", "testgroup3");*/
 
 
         g.addVertex(0, g0);
         g.addVertex(1, g1);
-        g.addVertex(2, g2);
+       // g.addVertex(2, g2);
         g.addEdge(0, 1);
-        g.addEdge(1, 2);
+       // g.addEdge(1, 2);
 
         Stack<Vertex> ts = g.dfs(g.getVertex(0));
         List<Vertex> topoOrder = new ArrayList<>();
@@ -50,8 +50,8 @@ public class Main {
 /*
         log.info("Warming for 2 minutes seconds.");
         Thread.sleep(60*2*1000);*/
-        log.info("Warming 30  seconds.");
-        Thread.sleep(30 * 1000);
+        log.info("Warming 20  seconds.");
+        Thread.sleep(20 * 1000);
 
         while (true) {
             log.info("Querying Prometheus");
@@ -59,7 +59,7 @@ public class Main {
             log.info("Sleeping for 5 seconds");
             log.info("******************************************");
             log.info("******************************************");
-            Thread.sleep(1000);
+            Thread.sleep(10000);
         }
     }
 
@@ -75,12 +75,18 @@ public class Main {
         for (int m = 0; m < topoOrder.size(); m++) {
             log.info("Vertex/CG number {} in topo order is {}", m, topoOrder.get(m).getG());
             getArrivalRate(g, m);
-            if (Duration.between(topoOrder.get(m).getG().getLastUpScaleDecision(),
-                    Instant.now()).getSeconds() > 3) {
-                //queryconsumergroups.QueryRate.queryConsumerGroup();
-                BinPack2.scaleAsPerBinPack(topoOrder.get(m).getG());
-            }
+//            if (Duration.between(topoOrder.get(m).getG().getLastUpScaleDecision(),
+//                    Instant.now()).getSeconds() > 3) {
+//                //queryconsumergroups.QueryRate.queryConsumerGroup();
+//                BinPack2.scaleAsPerBinPack(topoOrder.get(m).getG());
+//            }
+
+            BinPack2.scaleAsPerBinPack(topoOrder.get(m).getG());
+
+
         }
+
+       // log.info("*********************************************");
     }
 
 
@@ -92,14 +98,15 @@ public class Main {
         double totalArrivalRate = 0.0;
         for (int parent = 0; parent < A[m].length; parent++) {
             if (A[parent][m] == 1) {
-                //log.info( " {} {} is a prarent of {} {}", parent, g.getVertex(parent).getG() , m, g.getVertex(m).getG() );
+                log.info( " {} {} is a prarent of {} {}", parent, g.getVertex(parent).getG() , m, g.getVertex(m).getG() );
                 grandParent = false;
-                totalArrivalRate += (g.getVertex(parent).getG().getTotalArrivalRate() /*+
-                        (g.getVertex(parent).getG().getTotalLag()/(g.getVertex(parent).getG().getWsla()))*/)
+                totalArrivalRate += (g.getVertex(parent).getG().getTotalArrivalRate() +
+                        (g.getVertex(parent).getG().getTotalLag()/(g.getVertex(parent).getG().getWsla())))
                         * g.getBF()[parent][m];
             }
         }
-
+        //attention only if scaled the lag of the parent shall be counted as arrival rate.
+        // correct this.
         if (grandParent) {
             ArrivalRates.arrivalRateTopicGeneral(g.getVertex(m).getG(), false);
             log.info("Arrival rate of micorservice {} {}", m, g.getVertex(m).getG().getTotalArrivalRate());
@@ -110,6 +117,9 @@ public class Main {
         }
 
     }
+
+
+    //attention only if scaled the lag of the parent shall be counted as arrival rate.
 
 
 }
