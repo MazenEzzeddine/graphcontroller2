@@ -139,10 +139,10 @@ public class Main {
                 log.info( " {} {} is a prarent of {} {}", parent, g.getVertex(parent).getG() , m, g.getVertex(m).getG() );
                 grandParent = false;
                 totalArrivalRate += (g.getVertex(parent).getG().getTotalArrivalRate());
-                /*if(g.getVertex(parent).getG().isScaled()) {
+                if(g.getVertex(parent).getG().isScaled()) {
                     totalArrivalRate +=  (g.getVertex(parent).getG().getTotalLag()/(g.getVertex(parent).getG().getWsla()))
                             * g.getBF()[parent][m];
-                }*/
+                }
             }
         }
 
