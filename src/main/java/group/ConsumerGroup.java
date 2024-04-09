@@ -17,8 +17,19 @@ public class ConsumerGroup {
     double totalArrivalRate;
     double totalLag;
     double dynamicAverageMaxConsumptionRate;
-    double wsla = 2;
+    double wsla = 0.5;
     Instant lastUpScaleDecision = Instant.now();
+
+    public boolean isScaled() {
+        return scaled;
+    }
+
+    public void setScaled(boolean scaled) {
+        this.scaled = scaled;
+    }
+
+    boolean scaled;
+
 
     public ConsumerGroup(String inputTopic, Integer size,
                          double dynamicAverageMaxConsumptionRate,
@@ -33,6 +44,7 @@ public class ConsumerGroup {
         for (int i = 0; i <= 4; i++) {
             topicpartitions.add(new Partition(i, 0, 0));
         }
+        scaled = false;
     }
 
 
@@ -95,8 +107,8 @@ public class ConsumerGroup {
     }
     public void setTotalLag(double totalLag) {
 
-        double max = Math.max(totalArrivalRate, dynamicAverageMaxConsumptionRate*size);
-        totalLag = Math.max(totalLag - max, 0);
+   /*   double max = Math.max(totalArrivalRate, dynamicAverageMaxConsumptionRate*size);
+      totalLag = Math.max(totalLag - max, 0);*/
 
         this.totalLag = totalLag;
        for (int i = 0; i < 5; i++) {

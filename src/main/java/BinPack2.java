@@ -29,10 +29,12 @@ public class BinPack2 {
             //TODO IF and Else IF can be in the same logic
             log.info("We have to upscale  group1 by {}", replicasForscale);
             g.setSize(neededsize);
+            g.setScaled(true);
             try (final KubernetesClient k8s = new DefaultKubernetesClient()) {
                 k8s.apps().deployments().inNamespace("default").withName(g.getName()).scale(neededsize);
                 log.info("I have Upscaled group {} you should have {}", g.getKafkaName(), neededsize);
                 g.setLastUpScaleDecision(Instant.now());
+                return;
             }
         }
         else {
@@ -46,8 +48,11 @@ public class BinPack2 {
                     log.info("I have downscaled group {} you should have {}", g.getKafkaName(), neededsized);
                 }
                 g.setLastUpScaleDecision(Instant.now());
+                g.setScaled(true);
+                return;
             }
         }
+        g.setScaled(false);
         log.info("===================================");
     }
 
@@ -75,12 +80,12 @@ public class BinPack2 {
         //if a certain partition has an arrival rate  higher than R  set its arrival rate  to R
         //that should not happen in a well partionned topic
         for (Partition partition : parts) {
-            if (partition.getArrivalRate() > g.getDynamicAverageMaxConsumptionRate()) {
+            if (partition.getArrivalRate() > dynamicAverageMaxConsumptionRate) {
                 log.info("Since partition {} has arrival rate {} higher than consumer service rate {}" +
                                 " we are truncating its arrival rate", partition.getId(),
                         String.format("%.2f",  partition.getArrivalRate()),
-                        String.format("%.2f", g.getDynamicAverageMaxConsumptionRate()));
-                partition.setArrivalRate(g.getDynamicAverageMaxConsumptionRate());
+                        String.format("%.2f", dynamicAverageMaxConsumptionRate));
+                partition.setArrivalRate(dynamicAverageMaxConsumptionRate);
             }
         }
         //start the bin pack FFD with sort
@@ -147,7 +152,7 @@ public class BinPack2 {
                 log.info("Since partition {} has arrival rate {} higher than consumer service rate {}" +
                                 " we are truncating its arrival rate", partition.getId(),
                         String.format("%.2f",  partition.getArrivalRate()),
-                        String.format("%.2f", g.getDynamicAverageMaxConsumptionRate()));
+                        String.format("%.2f", dynamicAverageMaxConsumptionRate));
                 partition.setArrivalRate(dynamicAverageMaxConsumptionRate);
             }
         }

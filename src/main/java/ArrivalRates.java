@@ -22,7 +22,7 @@ public class ArrivalRates {
 
 
 
-    static void arrivalRateTopicGeneral(ConsumerGroup g, boolean justLag) {
+    static void arrivalRateTopicGeneral(ConsumerGroup g/*, boolean justLag*/) {
         String topic = g.getInputTopic();
         String cg = g.getKafkaName();
         List<String> arrivalqueries = Constants.getQueriesArrival(topic);
@@ -53,17 +53,17 @@ public class ArrivalRates {
             e.printStackTrace();
         }
         /////////////////////////////////////////////////////////////
-
+/*
         List<CompletableFuture<String>> partitionslagfuture2 = partitionslag2.stream()
                 .map(target -> client
                         .sendAsync(
                                 HttpRequest.newBuilder(target).GET().build(),
                                 HttpResponse.BodyHandlers.ofString())
                         .thenApply(HttpResponse::body))
-                .collect(Collectors.toList());
+                .collect(Collectors.toList());*/
 
 
-        if (!justLag) {
+       /* if (!justLag) {*/
             List<CompletableFuture<String>> partitionsfutures2 = partitions2.stream()
                     .map(target -> client
                             .sendAsync(
@@ -93,10 +93,10 @@ public class ArrivalRates {
             g.setTotalArrivalRate(totalarrivalstopic2);
             log.info("totalArrivalRate for  topic  {} {}",
                     g.getInputTopic(), totalarrivalstopic2);
-        }
+      //  }
 
-
-        int partition2 = 0;
+/*
+         partition2 = 0;
         double totallag2 = 0.0;
         long partitionLag2 = 0L;
 
@@ -113,7 +113,7 @@ public class ArrivalRates {
             //log.info("lag of partition {} is {} :", partition2, partitionLag2);
         }
         log.info("totalLag for topic {} {}", g.getInputTopic(), totallag2);
-        g.setTotalLag(totallag2);
+        g.setTotalLag(totallag2);*/
 
     }
 
