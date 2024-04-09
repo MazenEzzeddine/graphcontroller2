@@ -3,6 +3,7 @@ import group.ConsumerGroup;
 import group.Partition;
 import io.fabric8.kubernetes.client.DefaultKubernetesClient;
 import io.fabric8.kubernetes.client.KubernetesClient;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -11,12 +12,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+
+
 public class BinPack2 {
-
-
     private static final Logger log = LogManager.getLogger(BinPack2.class);
-
-
     static float fup = 0.9f;
     static float fdown= 0.4f;
 
@@ -30,6 +29,7 @@ public class BinPack2 {
             log.info("We have to upscale  group1 by {}", replicasForscale);
             g.setSize(neededsize);
             g.setScaled(true);
+            g.setCurrentAssignment(g.getAssignment());
             try (final KubernetesClient k8s = new DefaultKubernetesClient()) {
                 k8s.apps().deployments().inNamespace("default").withName(g.getName()).scale(neededsize);
                 log.info("I have Upscaled group {} you should have {}", g.getKafkaName(), neededsize);
@@ -47,10 +47,14 @@ public class BinPack2 {
                     k8s.apps().deployments().inNamespace("default").withName(g.getName()).scale(neededsized);
                     log.info("I have downscaled group {} you should have {}", g.getKafkaName(), neededsized);
                 }
+                g.setCurrentAssignment(g.getAssignment());
                 g.setLastUpScaleDecision(Instant.now());
                 g.setScaled(true);
                 return;
             }
+        }  if (assignmentViolatesTheSLA2(g)) {
+            g.getMetadataConsumer().enforceRebalance();
+            g.setCurrentAssignment(g.getCurrentAssignment());
         }
         g.setScaled(false);
         log.info("===================================");
@@ -119,6 +123,9 @@ public class BinPack2 {
                 break;
         }
         log.info(" The BP up scaler recommended for group {} {}",g.getKafkaName(), consumers.size());
+
+        g.setAssignment(consumers);
+
         return consumers.size();
     }
 
@@ -185,10 +192,36 @@ public class BinPack2 {
             if(j==parts.size())
                 break;
         }
+        g.setAssignment(consumers);
 
         log.info(" The BP down scaler recommended  for group {} {}",g.getKafkaName(), consumers.size());
         return consumers.size();
     }
+
+
+
+
+    private static boolean assignmentViolatesTheSLA2(ConsumerGroup g) {
+        List<Partition> partsReset = new ArrayList<>(g.getTopicpartitions());
+        for (Consumer cons : g.getCurrentAssignment()) {
+            double sumPartitionsArrival = 0;
+            double sumPartitionsLag = 0;
+            for (Partition p : cons.getAssignedPartitions()) {
+                sumPartitionsArrival += partsReset.get(p.getId()).getArrivalRate();
+                sumPartitionsLag += partsReset.get(p.getId()).getLag();
+            }
+
+            if (sumPartitionsLag  > ( g.getWsla() * 200  * .9f)
+                    || sumPartitionsArrival > 200* 0.9f) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+
+
+
 
 
 }
