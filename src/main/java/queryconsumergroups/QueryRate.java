@@ -19,7 +19,7 @@ public class QueryRate {
     static Properties props = new Properties();
     static Map<String, ConsumerGroupDescription> consumerGroupDescriptionMap;
 
-         static AdminClient admin;
+      /*   static AdminClient admin;
 
          static {
              props.put(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, BOOTSTRAP_SERVERS);
@@ -56,6 +56,6 @@ public class QueryRate {
         log.info("Received response on the rate: " + String.format("%.2f",rateResponse.getRate()));
         managedChannel.shutdown();
     }
-
+*/
 
 }

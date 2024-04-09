@@ -1,10 +1,14 @@
 package group;
 
+import org.apache.kafka.clients.consumer.ConsumerConfig;
+import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Properties;
 
 public class ConsumerGroup {
     private static final Logger log = LogManager.getLogger(ConsumerGroup.class);
@@ -17,8 +21,83 @@ public class ConsumerGroup {
     double totalArrivalRate;
     double totalLag;
     double dynamicAverageMaxConsumptionRate;
-    double wsla = 2;
+    double wsla = 0.5;
     Instant lastUpScaleDecision = Instant.now();
+
+    public boolean isScaled() {
+        return scaled;
+    }
+
+
+
+    public void setScaled(boolean scaled) {
+        this.scaled = scaled;
+    }
+
+    boolean scaled;
+
+
+    KafkaConsumerConfig kcg;
+    List<Consumer> assignment;
+    List<Consumer> currentAssignment;
+
+    public KafkaConsumerConfig getKcg() {
+        return kcg;
+    }
+
+    public void setKcg(KafkaConsumerConfig kcg) {
+        this.kcg = kcg;
+    }
+
+    public List<Consumer> getAssignment() {
+        return assignment;
+    }
+
+    public void setAssignment(List<Consumer> assignment) {
+        this.assignment = assignment;
+    }
+
+    public List<Consumer> getCurrentAssignment() {
+        return currentAssignment;
+    }
+
+    public void setCurrentAssignment(List<Consumer> currentAssignment) {
+        this.currentAssignment = currentAssignment;
+    }
+
+    public List<Consumer> getTempAssignment() {
+        return tempAssignment;
+    }
+
+    public void setTempAssignment(List<Consumer> tempAssignment) {
+        this.tempAssignment = tempAssignment;
+    }
+
+
+
+    public static double getMu() {
+        return mu;
+    }
+
+    public static void setMu(double mu) {
+        ConsumerGroup.mu = mu;
+    }
+
+    List<Consumer> tempAssignment;
+
+    public KafkaConsumer<byte[], byte[]> getMetadataConsumer() {
+        return metadataConsumer;
+    }
+
+    public void setMetadataConsumer(KafkaConsumer<byte[], byte[]> metadataConsumer) {
+        this.metadataConsumer = metadataConsumer;
+    }
+
+    private  KafkaConsumer<byte[], byte[]> metadataConsumer;
+    static double mu = 200.0;
+
+
+
 
     public ConsumerGroup(String inputTopic, Integer size,
                          double dynamicAverageMaxConsumptionRate,
@@ -33,6 +112,24 @@ public class ConsumerGroup {
         for (int i = 0; i <= 4; i++) {
             topicpartitions.add(new Partition(i, 0, 0));
         }
+        scaled = false;
+        kcg = new KafkaConsumerConfig("my-cluster-kafka-bootstrap:9092", inputTopic, kafkaName);
+        Properties props = KafkaConsumerConfig.createProperties(kcg);
+        props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG,
+                "org.apache.kafka.common.serialization.StringDeserializer");
+        props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG,
+                "org.apache.kafka.common.serialization.StringDeserializer");
+        metadataConsumer = new KafkaConsumer<>(props);
+        assignment = new ArrayList<Consumer>();
+
+        assignment.add(new Consumer("0", (long) (mu * wsla * .9),
+                mu * .9));
+        for (Partition p : topicpartitions) {
+            assignment.get(0).assignPartition(p);
+
+        }
+        currentAssignment = assignment;
+        tempAssignment = assignment;
     }
 
 
@@ -86,7 +183,7 @@ public class ConsumerGroup {
 
         for (int i = 0; i < 5; i++) {
            topicpartitions.get(i).setArrivalRate(totalArrivalRate/5.0);
-            //log.info("Arrival rate for partition {} is {}", i, topicpartitions.get(i).getArrivalRate());
+            log.info("Arrival rate for partition {} is {}", i, topicpartitions.get(i).getArrivalRate());
         }
     }
 
@@ -95,12 +192,13 @@ public class ConsumerGroup {
     }
     public void setTotalLag(double totalLag) {
 
-        double max = Math.max(totalArrivalRate, dynamicAverageMaxConsumptionRate*size);
-        totalLag = Math.max(totalLag - max, 0);
+   /*   double max = Math.max(totalArrivalRate, dynamicAverageMaxConsumptionRate*size);
+      totalLag = Math.max(totalLag - max, 0);*/
 
         this.totalLag = totalLag;
        for (int i = 0; i < 5; i++) {
             topicpartitions.get(i).setLag((long)(totalLag/5));
+           log.info("Lag for partition {} is {}", i, topicpartitions.get(i).getLag());
         }
            // log.info("Lag for partition {} is {}", i, topicpartitions.get(i).getLag());
         }
