@@ -34,12 +34,10 @@ public class Main {
                 200, 0.5,
                 "latency3", "testgroup3");
 
-
         g.addVertex(0, g0);
         g.addVertex(1, g1);
         g.addVertex(2, g2);
 
-        // g.addVertex(2, g2);
         g.addEdge(0, 1);
         g.addEdge(1, 2);
 

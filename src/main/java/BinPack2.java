@@ -31,7 +31,7 @@ public class BinPack2 {
             g.setScaled(true);
             g.setCurrentAssignment(g.getAssignment());
             try (final KubernetesClient k8s = new DefaultKubernetesClient()) {
-                k8s.apps().deployments().inNamespace("default").withName(g.getName()).scale(neededsize);
+                k8s.apps().deployments().inNamespace("default").withName(g.getName()).scale(neededsize, false);
                 log.info("I have Upscaled group {} you should have {}", g.getKafkaName(), neededsize);
                 g.setLastUpScaleDecision(Instant.now());
                 return;
@@ -44,7 +44,7 @@ public class BinPack2 {
                 log.info("We have to downscale  group by {} {}", g.getKafkaName() ,replicasForscaled);
                 g.setSize(neededsized);
                 try (final KubernetesClient k8s = new DefaultKubernetesClient()) {
-                    k8s.apps().deployments().inNamespace("default").withName(g.getName()).scale(neededsized);
+                    k8s.apps().deployments().inNamespace("default").withName(g.getName()).scale(neededsized, false);
                     log.info("I have downscaled group {} you should have {}", g.getKafkaName(), neededsized);
                 }
                 g.setCurrentAssignment(g.getAssignment());
@@ -54,7 +54,7 @@ public class BinPack2 {
             }
         }  if (assignmentViolatesTheSLA2(g)) {
             g.getMetadataConsumer().enforceRebalance();
-            g.setCurrentAssignment(g.getCurrentAssignment());
+            g.setCurrentAssignment(g.getAssignment());
         }
         g.setScaled(false);
         log.info("===================================");
