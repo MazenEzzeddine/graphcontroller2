@@ -26,9 +26,7 @@ public class ArrivalProducer {
         totalArrivalrate = reply.getArrival();
         double partitionArrival = reply.getArrival()/5.0;
         log.info("Arrival into each partition is {}", partitionArrival);
-        /*for (int i = 0; i < 5; i++) {
-            g.getTopicpartitions().get(i).setArrivalRate(partitionArrival);
-        }*/
+
 
         g.setTotalArrivalRate(totalArrivalrate);
 

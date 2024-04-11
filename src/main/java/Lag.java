@@ -25,9 +25,6 @@ public class Lag {
 
     //////////////////////////////////////////////////////////////////////////////
 
-
-
-
     public  static void readEnvAndCrateAdminClient() throws ExecutionException, InterruptedException {
         BOOTSTRAP_SERVERS = System.getenv("BOOTSTRAP_SERVERS");
         Properties props = new Properties();
@@ -62,13 +59,10 @@ public class Lag {
             long committedoffset = committedOffsets.get(t).offset();
             g.getTopicpartitions().get(i).setLag(latestOffset - committedoffset);
             totalLag += g.getTopicpartitions().get(i).getLag();
-            /*log.info("partition {} has lag {}", i, g.getTopicpartitions().get(i),
-                    g.getTopicpartitions().get(i).getLag());*/
+
         }
 
         g.setTotalLag(totalLag);
-
-        //addParentLag(totalLag);
 
     }
 
