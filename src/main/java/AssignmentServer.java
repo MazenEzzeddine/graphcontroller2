@@ -60,9 +60,6 @@ public class AssignmentServer implements Runnable {
         @Override
         public void getAssignment(AssignmentRequest request, StreamObserver<AssignmentResponse> responseObserver) {
 
-            log.info("Hello ");
-            log.info(Controller.g.getVertex(0).getG().getCurrentAssignment().size());
-
             if (Controller.g.getVertex(0).getG().getCurrentAssignment().size() == 0) {
                 List<ConsumerGrpc> assignmentReply = new ArrayList<>();
                 for (int i = 0; i < 5; i++) {

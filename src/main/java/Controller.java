@@ -55,7 +55,7 @@ public class Controller implements Runnable{
             log.info("Sleeping for 5 seconds");
             log.info("******************************************");
             log.info("******************************************");
-            Thread.sleep(30000);
+            Thread.sleep(1000);
         }
     }
 

@@ -19,6 +19,9 @@ public class BinPack2 {
     static float fup = 0.9f;
     static float fdown= 0.4f;
 
+    static List<Consumer> tempAssignment = new ArrayList<Consumer>();
+
+
     public static void scaleAsPerBinPack(ConsumerGroup g) {
         log.info("Currently we have this number of consumers group {} {}", g.getKafkaName(), g.getSize());
         int neededsize = binPackAndScale(g);
@@ -29,7 +32,9 @@ public class BinPack2 {
             log.info("We have to upscale  group1 by {}", replicasForscale);
             g.setSize(neededsize);
             g.setScaled(true);
-            g.setCurrentAssignment(g.getAssignment());
+            g.setCurrentAssignment(List.copyOf(g.getAssignment()));
+            g.setTempAssignment(List.copyOf(g.getAssignment()));
+
             try (final KubernetesClient k8s = new DefaultKubernetesClient()) {
                 k8s.apps().deployments().inNamespace("default").withName(g.getName()).scale(neededsize, false);
                 log.info("I have Upscaled group {} you should have {}", g.getKafkaName(), neededsize);
@@ -47,14 +52,14 @@ public class BinPack2 {
                     k8s.apps().deployments().inNamespace("default").withName(g.getName()).scale(neededsized, false);
                     log.info("I have downscaled group {} you should have {}", g.getKafkaName(), neededsized);
                 }
-                g.setCurrentAssignment(g.getAssignment());
+                g.setCurrentAssignment(List.copyOf(g.getAssignment()));
                 g.setLastUpScaleDecision(Instant.now());
                 g.setScaled(true);
                 return;
             }
         }  if (assignmentViolatesTheSLA2(g)) {
             g.getMetadataConsumer().enforceRebalance();
-            g.setCurrentAssignment(g.getAssignment());
+            g.setCurrentAssignment(List.copyOf(g.getTempAssignment()));
         }
         g.setScaled(false);
         log.info("===================================");
@@ -203,6 +208,19 @@ public class BinPack2 {
 
     private static boolean assignmentViolatesTheSLA2(ConsumerGroup g) {
         List<Partition> partsReset = new ArrayList<>(g.getTopicpartitions());
+
+        float   fraction = 0.9f;
+        for (Partition partition : partsReset) {
+            if (partition.getLag() > 200f * g.getWsla() * fraction) {
+                partition.setLag((long) (200f * g.getWsla() * fraction));
+            }
+        }
+
+        for (Partition partition : partsReset) {
+            if (partition.getArrivalRate() > 200f * fraction) {
+                partition.setArrivalRate(200f * fraction );
+            }
+        }
         for (Consumer cons : g.getCurrentAssignment()) {
             double sumPartitionsArrival = 0;
             double sumPartitionsLag = 0;
