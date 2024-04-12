@@ -21,13 +21,13 @@ public class Controller implements Runnable{
         g = new Graph(3);
 
         ConsumerGroup g0 = new ConsumerGroup("testtopic1", 1,
-                200, 0.5,
+                200, 1,
                 "latency1", "testgroup1");
         ConsumerGroup g1 = new ConsumerGroup("testtopic2", 1,
-                200, 0.5,
+                200, 1,
                 "latency2", "testgroup2");
         ConsumerGroup g2 = new ConsumerGroup("testtopic3", 1,
-                200, 0.5,
+                200, 1,
                 "latency3", "testgroup3");
 
         g.addVertex(0, g0);
@@ -55,7 +55,7 @@ public class Controller implements Runnable{
             log.info("Sleeping for 5 seconds");
             log.info("******************************************");
             log.info("******************************************");
-            Thread.sleep(1000);
+            Thread.sleep(60000);
         }
     }
 
@@ -70,7 +70,10 @@ public class Controller implements Runnable{
         Util.computeBranchingFactors(g);
         for (int m = 0; m < topoOrder.size(); m++) {
             log.info("Vertex/CG number {} in topo order is {}", m, topoOrder.get(m).getG());
-            getArrivalRate2(g, m);
+            topoOrder.get(m).getG().setTotalLag(0.0);
+            //g.getVertex(m).getG().setTotalLag(0.0);
+
+            getArrivalRate2(g, topoOrder.get(m).getLabel());
 //            if (Duration.between(topoOrder.get(m).getG().getLastUpScaleDecision(),
 //                    Instant.now()).getSeconds() > 3) {
 //                //queryconsumergroups.QueryRate.queryConsumerGroup();
@@ -127,14 +130,15 @@ public class Controller implements Runnable{
         boolean grandParent = true;
         double totalArrivalRate = 0.0;
         for (int parent = 0; parent < A[m].length; parent++) {
+            //total = 0
             if (A[parent][m] == 1) {
                 log.info( " {} {} is a prarent of {} {}", parent, g.getVertex(parent).getG() , m, g.getVertex(m).getG() );
                 grandParent = false;
                 totalArrivalRate += (g.getVertex(parent).getG().getTotalArrivalRate());
-                if(g.getVertex(parent).getG().isScaled()) {
+               /* if(g.getVertex(parent).getG().isScaled()) {
                     totalArrivalRate +=  (g.getVertex(parent).getG().getTotalLag()/(g.getVertex(parent).getG().getWsla()))
                             * g.getBF()[parent][m];
-                }
+                }*/
             }
         }
 
@@ -144,12 +148,12 @@ public class Controller implements Runnable{
         if (grandParent) {
             //ArrivalRates.arrivalRateTopicGeneral(g.getVertex(m).getG());
             ArrivalProducer.callForArrivals(g.getVertex(m).getG());
-            Lag.LagByOffsets(g.getVertex(m).getG());
+           // Lag.LagByOffsets(g.getVertex(m).getG());
             log.info("Arrival rate of micorservice {} {}", m, g.getVertex(m).getG().getTotalArrivalRate());
         } else {
             g.getVertex(m).getG().setTotalArrivalRate(totalArrivalRate);
             //ArrivalRates.arrivalRateTopicGeneral(g.getVertex(m).getG(), true);
-            Lag.LagByOffsets(g.getVertex(m).getG());
+           // Lag.LagByOffsets(g.getVertex(m).getG());
             log.info("Arrival rate of micorservice {} {}", m, g.getVertex(m).getG().getTotalArrivalRate());
         }
 

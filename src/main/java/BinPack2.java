@@ -19,7 +19,6 @@ public class BinPack2 {
     static float fup = 0.9f;
     static float fdown= 0.4f;
 
-    static List<Consumer> tempAssignment = new ArrayList<Consumer>();
 
 
     public static void scaleAsPerBinPack(ConsumerGroup g) {
@@ -211,14 +210,14 @@ public class BinPack2 {
 
         float   fraction = 0.9f;
         for (Partition partition : partsReset) {
-            if (partition.getLag() > 200f * g.getWsla() * fraction) {
-                partition.setLag((long) (200f * g.getWsla() * fraction));
+            if (partition.getLag() > g.getDynamicAverageMaxConsumptionRate() * g.getWsla() * fraction) {
+                partition.setLag((long) (g.getDynamicAverageMaxConsumptionRate() * g.getWsla() * fraction));
             }
         }
 
         for (Partition partition : partsReset) {
-            if (partition.getArrivalRate() > 200f * fraction) {
-                partition.setArrivalRate(200f * fraction );
+            if (partition.getArrivalRate() > g.getDynamicAverageMaxConsumptionRate() * fraction) {
+                partition.setArrivalRate(g.getDynamicAverageMaxConsumptionRate() * fraction );
             }
         }
         for (Consumer cons : g.getCurrentAssignment()) {
@@ -229,8 +228,8 @@ public class BinPack2 {
                 sumPartitionsLag += partsReset.get(p.getId()).getLag();
             }
 
-            if (sumPartitionsLag  > ( g.getWsla() * 200  * .9f)
-                    || sumPartitionsArrival > 200* 0.9f) {
+            if (sumPartitionsLag  > ( g.getWsla() * g.getDynamicAverageMaxConsumptionRate()  * .9f)
+                    || sumPartitionsArrival > g.getDynamicAverageMaxConsumptionRate()* 0.9f) {
                 return true;
             }
         }
