@@ -65,10 +65,10 @@ public class Util {
                 }
             }
         }
-        g.setBF(0,1, 1.0);
+     /*   g.setBF(0,1, 1.0);
 
         g.setBF(1,2, 1.0);
-
+*/
 
 
 
