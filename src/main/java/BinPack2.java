@@ -4,6 +4,7 @@ import group.Partition;
 import io.fabric8.kubernetes.client.DefaultKubernetesClient;
 import io.fabric8.kubernetes.client.KubernetesClient;
 
+import io.fabric8.kubernetes.client.KubernetesClientBuilder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -16,8 +17,20 @@ import java.util.List;
 
 public class BinPack2 {
     private static final Logger log = LogManager.getLogger(BinPack2.class);
-    static float fup = 0.9f;
-    static float fdown= 0.4f;
+    static float fup = 0.9f;//1.0f;//0.9f;
+    static float fdown= 0.4f;//0.4f;
+
+
+
+ /*   static KubernetesClient k8s1 = new KubernetesClientBuilder().build();
+    static KubernetesClient k8s2 = new KubernetesClientBuilder().build();
+    static KubernetesClient k8s3 = new KubernetesClientBuilder().build();*/
+
+
+
+
+
+
 
 
 
@@ -34,12 +47,17 @@ public class BinPack2 {
             g.setCurrentAssignment(List.copyOf(g.getAssignment()));
             g.setTempAssignment(List.copyOf(g.getAssignment()));
 
-            try (final KubernetesClient k8s = new DefaultKubernetesClient()) {
-                k8s.apps().deployments().inNamespace("default").withName(g.getName()).scale(neededsize, false);
-                log.info("I have Upscaled group {} you should have {}", g.getKafkaName(), neededsize);
-                g.setLastUpScaleDecision(Instant.now());
-                return;
-            }
+
+
+              new Thread(() -> {
+                  g.k8s.apps().deployments().inNamespace("default").withName(g.getName()).scale(neededsize, false);
+                  log.info("I have Upscaled group {} you should have {}", g.getKafkaName(), neededsize);
+
+              }).start();
+
+            g.setLastUpScaleDecision(Instant.now());
+            return;
+
         }
         else {
             int neededsized = binPackAndScaled(g);
@@ -47,10 +65,11 @@ public class BinPack2 {
             if(replicasForscaled>0) {
                 log.info("We have to downscale  group by {} {}", g.getKafkaName() ,replicasForscaled);
                 g.setSize(neededsized);
-                try (final KubernetesClient k8s = new DefaultKubernetesClient()) {
-                    k8s.apps().deployments().inNamespace("default").withName(g.getName()).scale(neededsized, false);
-                    log.info("I have downscaled group {} you should have {}", g.getKafkaName(), neededsized);
-                }
+               new Thread(() -> {
+                    g.k8s.apps().deployments().inNamespace("default").withName(g.getName()).scale(neededsize, false);
+                    log.info("I have Downscaled group {} you should have {}", g.getKafkaName(), neededsize);
+
+                }).start();
                 g.setCurrentAssignment(List.copyOf(g.getAssignment()));
                 g.setLastUpScaleDecision(Instant.now());
                 g.setScaled(true);
