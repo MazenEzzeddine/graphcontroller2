@@ -74,7 +74,7 @@ public class Controller implements Runnable{
 */
             //g.getVertex(m).getG().setTotalLag(0.0);
 
-            //getArrivalRate2(g, topoOrder.get(m).getLabel());
+            getArrivalRate2(g, topoOrder.get(m).getLabel());
             BinPack2.scaleAsPerBinPack(topoOrder.get(m).getG());
 
 
