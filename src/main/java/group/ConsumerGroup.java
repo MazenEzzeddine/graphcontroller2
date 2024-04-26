@@ -1,5 +1,7 @@
 package group;
 
+import io.fabric8.kubernetes.client.KubernetesClient;
+import io.fabric8.kubernetes.client.KubernetesClientBuilder;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.logging.log4j.LogManager;
@@ -23,6 +25,8 @@ public class ConsumerGroup {
     double dynamicAverageMaxConsumptionRate;
     double wsla = 0.5;
     Instant lastUpScaleDecision = Instant.now();
+
+    public  KubernetesClient k8s;
 
     public boolean isScaled() {
         return scaled;
@@ -112,6 +116,8 @@ public class ConsumerGroup {
         for (int i = 0; i <= 4; i++) {
             topicpartitions.add(new Partition(i, 0, 0));
         }
+
+        k8s = new KubernetesClientBuilder().build();
         scaled = false;
         kcg = new KafkaConsumerConfig("my-cluster-kafka-bootstrap:9092", inputTopic, kafkaName);
         Properties props = KafkaConsumerConfig.createProperties(kcg);
@@ -192,8 +198,10 @@ public class ConsumerGroup {
     }
     public void setTotalLag(double totalLag) {
 
-   /*   double max = Math.max(totalArrivalRate, dynamicAverageMaxConsumptionRate*size);
-      totalLag = Math.max(totalLag - max, 0);*/
+
+    // TO BE OR NOT TO BE
+      double max = Math.max(totalArrivalRate, dynamicAverageMaxConsumptionRate*size);
+      totalLag = Math.max(totalLag - max, 0);
 
         this.totalLag = totalLag;
        for (int i = 0; i < 5; i++) {
