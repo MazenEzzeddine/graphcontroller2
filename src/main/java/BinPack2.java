@@ -47,8 +47,6 @@ public class BinPack2 {
             g.setCurrentAssignment(List.copyOf(g.getAssignment()));
             g.setTempAssignment(List.copyOf(g.getAssignment()));
 
-
-
               new Thread(() -> {
                   g.k8s.apps().deployments().inNamespace("default").withName(g.getName()).scale(neededsize, false);
                   log.info("I have Upscaled group {} you should have {}", g.getKafkaName(), neededsize);
