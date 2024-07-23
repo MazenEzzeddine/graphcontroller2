@@ -73,7 +73,8 @@ public class BinPack2 {
                 g.setScaled(true);
                 return;
             }
-        }  if (assignmentViolatesTheSLA2(g)) {
+        }
+        if (assignmentViolatesTheSLA2(g)) {
             g.getMetadataConsumer().enforceRebalance();
             g.setCurrentAssignment(List.copyOf(g.getTempAssignment()));
         }

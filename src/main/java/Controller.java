@@ -141,8 +141,8 @@ public class Controller implements Runnable{
         //attention only if scaled the lag of the parent shall be counted as arrival rate.
         // correct this.
         if (grandParent) {
-            ArrivalRates.arrivalRateTopicGeneral(g.getVertex(m).getG());
-            //ArrivalProducer.callForArrivals(g.getVertex(m).getG());
+           // ArrivalRates.arrivalRateTopicGeneral(g.getVertex(m).getG());
+            ArrivalProducer.callForArrivals(g.getVertex(m).getG());
             Lag.LagByOffsets(g.getVertex(m).getG());
             log.info("Arrival rate of micorservice {} {}", m, g.getVertex(m).getG().getTotalArrivalRate());
         } else {
