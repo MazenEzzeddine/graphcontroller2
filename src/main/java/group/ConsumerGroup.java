@@ -186,7 +186,7 @@ public class ConsumerGroup {
     }
     public void setTotalArrivalRate(double totalArrivalRate) {
         this.totalArrivalRate = totalArrivalRate;
-
+        // TODO
         for (int i = 0; i < 5; i++) {
            topicpartitions.get(i).setArrivalRate(totalArrivalRate/5.0);
             log.info("Arrival rate for partition {} is {}", i, topicpartitions.get(i).getArrivalRate());
@@ -202,6 +202,10 @@ public class ConsumerGroup {
       totalLag = Math.max(totalLag - max, 0);
 
         this.totalLag = totalLag;
+
+
+
+        //eventually equal lag per partition?
        for (int i = 0; i < 5; i++) {
             topicpartitions.get(i).setLag((long)(totalLag/5));
            log.info("Lag for partition {} is {}", i, topicpartitions.get(i).getLag());
