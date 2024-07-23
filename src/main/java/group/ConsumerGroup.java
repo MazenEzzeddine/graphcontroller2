@@ -23,7 +23,7 @@ public class ConsumerGroup {
     double totalArrivalRate;
     double totalLag;
     double dynamicAverageMaxConsumptionRate;
-    double wsla = 0.5;
+    double wsla;
     Instant lastUpScaleDecision = Instant.now();
 
     public  KubernetesClient k8s;
@@ -197,8 +197,6 @@ public class ConsumerGroup {
         return totalLag;
     }
     public void setTotalLag(double totalLag) {
-
-
     // TO BE OR NOT TO BE
       double max = Math.max(totalArrivalRate, dynamicAverageMaxConsumptionRate*size);
       totalLag = Math.max(totalLag - max, 0);

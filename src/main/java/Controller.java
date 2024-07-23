@@ -62,10 +62,10 @@ public class Controller implements Runnable{
 
     static void QueryingPrometheus(Graph g, List<Vertex> topoOrder)
             throws ExecutionException, InterruptedException {
-
+/*
         ArrivalRates.arrivalRateTopicGeneral(g.getVertex(0).getG());
         ArrivalRates.arrivalRateTopicGeneral(g.getVertex(1).getG());
-        ArrivalRates.arrivalRateTopicGeneral(g.getVertex(2).getG());
+        ArrivalRates.arrivalRateTopicGeneral(g.getVertex(2).getG());*/
        Util.computeBranchingFactors(g);
         for (int m = 0; m < topoOrder.size(); m++) {
             log.info("Vertex/CG number {} in topo order is {}", m, topoOrder.get(m).getG());
@@ -74,7 +74,7 @@ public class Controller implements Runnable{
 */
             //g.getVertex(m).getG().setTotalLag(0.0);
 
-            //getArrivalRate2(g, topoOrder.get(m).getLabel());
+            getArrivalRate2(g, topoOrder.get(m).getLabel());
             BinPack2.scaleAsPerBinPack(topoOrder.get(m).getG());
 
 
