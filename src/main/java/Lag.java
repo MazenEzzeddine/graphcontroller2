@@ -38,7 +38,7 @@ public class Lag {
 
     static void LagByOffsets(ConsumerGroup g) throws ExecutionException, InterruptedException {
         String topic = g.getInputTopic();
-        String cg = g.getKafkaName();
+        //String cg = g.getKafkaName();
 
         committedOffsets = admin.listConsumerGroupOffsets(g.getKafkaName())
                 .partitionsToOffsetAndMetadata().get();
