@@ -26,6 +26,10 @@ public class QueryForBF {
         String testtopic2 = "http://prometheus-operated:9090/api/v1/query?query=sum("
                 + topico + ")";*/
 
+
+
+        //average over all the replicas...
+
         String testtopic1i = "http://prometheus-operated:9090/api/v1/query?" +
                 "query=sum(avg_over_time("+ topici+"%5B20s%5D))";
         String testtopic2 = "http://prometheus-operated:9090/api/v1/query?query=sum(avg_over_time("

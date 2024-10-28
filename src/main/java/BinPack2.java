@@ -163,7 +163,7 @@ public class BinPack2 {
       double dynamicAverageMaxConsumptionRate = g.getDynamicAverageMaxConsumptionRate()*fdown;
 
         long maxLagCapacity;
-        maxLagCapacity = (long) (dynamicAverageMaxConsumptionRate * g.getWsla());
+        maxLagCapacity = (long) (dynamicAverageMaxConsumptionRate * g.getWsla());  //TODO times fdown correct..
 
         //if a certain partition has a lag higher than R Wmax set its lag to R*Wmax
         // atention to the window
@@ -191,6 +191,8 @@ public class BinPack2 {
             int j;
             consumers.clear();
             for (int t = 0; t < consumerCount; t++) {
+
+                //TODO  new Consumer((String.valueOf(t))
                 consumers.add(new Consumer((String.valueOf(consumerCount)), maxLagCapacity,
                         dynamicAverageMaxConsumptionRate));
             }
