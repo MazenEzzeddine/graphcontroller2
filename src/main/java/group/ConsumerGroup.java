@@ -26,12 +26,11 @@ public class ConsumerGroup {
     double wsla;
     Instant lastUpScaleDecision = Instant.now();
 
-    public  KubernetesClient k8s;
+    public KubernetesClient k8s;
 
     public boolean isScaled() {
         return scaled;
     }
-
 
 
     public void setScaled(boolean scaled) {
@@ -78,7 +77,6 @@ public class ConsumerGroup {
     }
 
 
-
     public static double getMu() {
         return mu;
     }
@@ -97,10 +95,8 @@ public class ConsumerGroup {
         this.metadataConsumer = metadataConsumer;
     }
 
-    private  KafkaConsumer<byte[], byte[]> metadataConsumer;
+    private KafkaConsumer<byte[], byte[]> metadataConsumer;
     static double mu = 200.0;
-
-
 
 
     public ConsumerGroup(String inputTopic, Integer size,
@@ -142,33 +138,40 @@ public class ConsumerGroup {
     public String getKafkaName() {
         return kafkaName;
     }
+
     public void setKafkaName(String kafkaName) {
         this.kafkaName = kafkaName;
     }
+
     public String getName() {
         return name;
     }
+
     public void setName(String name) {
         this.name = name;
     }
+
     public Integer getSize() {
         return size;
     }
+
     public void setSize(Integer size) {
         this.size = size;
     }
+
     public double getDynamicAverageMaxConsumptionRate() {
         return dynamicAverageMaxConsumptionRate;
     }
 
 
-
     public double getWsla() {
         return wsla;
     }
+
     public Instant getLastUpScaleDecision() {
         return lastUpScaleDecision;
     }
+
     public void setLastUpScaleDecision(Instant lastUpScaleDecision) {
         this.lastUpScaleDecision = lastUpScaleDecision;
     }
@@ -176,6 +179,7 @@ public class ConsumerGroup {
     public String getInputTopic() {
         return inputTopic;
     }
+
     public ArrayList<Partition> getTopicpartitions() {
         return topicpartitions;
     }
@@ -184,11 +188,12 @@ public class ConsumerGroup {
     public double getTotalArrivalRate() {
         return totalArrivalRate;
     }
+
     public void setTotalArrivalRate(double totalArrivalRate) {
         this.totalArrivalRate = totalArrivalRate;
         // TODO
         for (int i = 0; i < 5; i++) {
-           topicpartitions.get(i).setArrivalRate(totalArrivalRate/5.0);
+            topicpartitions.get(i).setArrivalRate(totalArrivalRate / 5.0);
             log.info("Arrival rate for partition {} is {}", i, topicpartitions.get(i).getArrivalRate());
         }
     }
@@ -196,20 +201,25 @@ public class ConsumerGroup {
     public double getTotalLag() {
         return totalLag;
     }
-    public void setTotalLag(double totalLag) {
-    // TO BE OR NOT TO BE
-      double max = Math.max(totalArrivalRate, dynamicAverageMaxConsumptionRate*size);
-      totalLag = Math.max(totalLag - max, 0);
 
+    public void setTotalLag(double totalLag) {
+        // TODO  TO BE OR NOT TO BE
+        //  double max = Math.max(totalArrivalRate, dynamicAverageMaxConsumptionRate * size);
+        // lag = lag + (arrivalsPerSec - consumedPerSec)
+        // lag = max (0, lag)
+
+        totalLag = Math.max(totalLag -  (dynamicAverageMaxConsumptionRate * size), 0);
+        //totalLag = Math.max(totalLag - max, 0);
         this.totalLag = totalLag;
 
 
-
         //eventually equal lag per partition?
-       for (int i = 0; i < 5; i++) {
-            topicpartitions.get(i).setLag((long)(totalLag/5));
-           log.info("Lag for partition {} is {}", i, topicpartitions.get(i).getLag());
+        //how about lagPerPartition = Math.max(lagPerPartition -  dynamicAverageMaxConsumptionRate, 0)
+        //topicpartitions.get(i).setLag(lagPerPartition);
+        for (int i = 0; i < 5; i++) {
+            topicpartitions.get(i).setLag((long) (totalLag / 5));
+            log.info("Lag for partition {} is {}", i, topicpartitions.get(i).getLag());
         }
-           // log.info("Lag for partition {} is {}", i, topicpartitions.get(i).getLag());
-        }
+        // log.info("Lag for partition {} is {}", i, topicpartitions.get(i).getLag());
+    }
 }
