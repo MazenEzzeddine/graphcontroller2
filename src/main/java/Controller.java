@@ -69,9 +69,8 @@ public class Controller implements Runnable{
        Util.computeBranchingFactors(g);
         for (int m = 0; m < topoOrder.size(); m++) {
             log.info("Vertex/CG number {} in topo order is {}", m, topoOrder.get(m).getG());
-/*
-            topoOrder.get(m).getG().setTotalLag(0.0);
-*/
+
+            //topoOrder.get(m).getG().setTotalLag(0.0);
             //g.getVertex(m).getG().setTotalLag(0.0);
 
             getArrivalRate2(g, topoOrder.get(m).getLabel());
@@ -126,7 +125,9 @@ public class Controller implements Runnable{
         double totalArrivalRate = 0.0;
         for (int parent = 0; parent < A[m].length; parent++) {
             //total = 0
+            //
             if (A[parent][m] == 1) {
+               // g.getVertex(parent).getG().getName() or input topic
                 log.info( " {} {} is a prarent of {} {}", parent, g.getVertex(parent).getG() , m, g.getVertex(m).getG() );
                 grandParent = false;
                 totalArrivalRate += (g.getVertex(parent).getG().getTotalArrivalRate()) *  g.getBF()[parent][m];
@@ -139,7 +140,7 @@ public class Controller implements Runnable{
 
 
         //attention only if scaled the lag of the parent shall be counted as arrival rate.
-        // correct this.
+        // correct this. == > corrected
         if (grandParent) {
            // ArrivalRates.arrivalRateTopicGeneral(g.getVertex(m).getG());
             ArrivalProducer.callForArrivals(g.getVertex(m).getG());
@@ -148,7 +149,7 @@ public class Controller implements Runnable{
         } else {
             g.getVertex(m).getG().setTotalArrivalRate(totalArrivalRate);
             //ArrivalRates.arrivalRateTopicGeneral(g.getVertex(m).getG(), true);
-           Lag.LagByOffsets(g.getVertex(m).getG());
+            Lag.LagByOffsets(g.getVertex(m).getG());
             log.info("Arrival rate of micorservice {} {}", m, g.getVertex(m).getG().getTotalArrivalRate());
         }
 
