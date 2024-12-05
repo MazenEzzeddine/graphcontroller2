@@ -193,7 +193,7 @@ public class BinPack2 {
             for (int t = 0; t < consumerCount; t++) {
 
                 //TODO  new Consumer((String.valueOf(t))
-                consumers.add(new Consumer((String.valueOf(consumerCount)), maxLagCapacity,
+                consumers.add(new Consumer((String.valueOf(t)), maxLagCapacity,
                         dynamicAverageMaxConsumptionRate));
             }
 
