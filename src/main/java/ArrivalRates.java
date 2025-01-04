@@ -89,7 +89,7 @@ public class ArrivalRates {
 
 
 //TODO lag disable for now.
-/*
+
         List<CompletableFuture<String>> partitionslagfuture = partitionslag2.stream()
                 .map(target -> client
                         .sendAsync(
@@ -114,7 +114,9 @@ public class ArrivalRates {
             //log.info("lag of partition {} is {} :", partition2, partitionLag2);
         }
         log.info("totalLag for topic {} {}", g.getInputTopic(), totallag2);
-        g.setTotalLag(totallag2);*/
+        g.setTotalLag(0.0);
+
+        //g.setTotalLag(totallag2);
 
     }
 

@@ -7,23 +7,12 @@ import java.util.Stack;
 
 public class Graph {
     private final Vertex[] V;
-    private int vMax;
     private final int[][] adjMat;
-    public int nV;
     private final Stack<Vertex> s;
     private final Stack<Vertex> topoStack;
-    private  double[][] BF;
-
-    public double[][] getBF() {
-        return BF;
-    }
-
-    public void setBF(int i, int j, double value) {
-       BF[i][j]=value;
-    }
-    public int[][] getAdjMat() {
-        return adjMat;
-    }
+    public int nV;
+    private final int vMax;
+    private final double[][] BF;
 
     public Graph(int vMax) {
         this.vMax = vMax; // Maximum vertex can vbe added
@@ -35,7 +24,19 @@ public class Graph {
         topoStack = new Stack<>();
     }
 
-    public void addVertex(int label,  ConsumerGroup g) {
+    public double[][] getBF() {
+        return BF;
+    }
+
+    public void setBF(int i, int j, double value) {
+        BF[i][j] = value;
+    }
+
+    public int[][] getAdjMat() {
+        return adjMat;
+    }
+
+    public void addVertex(int label, ConsumerGroup g) {
         V[nV] = new Vertex(label, g);
         nV++;
     }
@@ -49,9 +50,8 @@ public class Graph {
     }
 
     public Vertex unVisitedAdjVet(Vertex v) {
-        for(int i=1; i<nV; i++) {
-            if( adjMat[v.label][i] == 1 && !V[i].isVisited )
-                return V[i];
+        for (int i = 1; i < nV; i++) {
+            if (adjMat[v.label][i] == 1 && !V[i].isVisited) return V[i];
         }
         return null;
     }
@@ -61,17 +61,16 @@ public class Graph {
         start.isVisited = true;
         //System.out.print(start);
 
-        while(!s.isEmpty()) {
+        while (!s.isEmpty()) {
             Vertex vet = unVisitedAdjVet(s.peek());
-                if (vet != null) {
-                    vet.isVisited = true;
-                   // System.out.print(vet);
-                    s.push(vet);
-                } else {
-                   topoStack.push(s.pop());
-                }
+            if (vet != null) {
+                vet.isVisited = true;
+                // System.out.print(vet);
+                s.push(vet);
+            } else {
+                topoStack.push(s.pop());
             }
-        return  topoStack;
+        }
+        return topoStack;
     }
 }
-// end class graph.Graph

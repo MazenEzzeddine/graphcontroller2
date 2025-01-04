@@ -45,27 +45,27 @@ public class Controller implements Runnable{
             topoOrder.add(ts.pop());
         }
 
-        log.info("Warming for 30 s.");
-        Thread.sleep(30000);
+        log.info("Warming for 20 s.");
+        Thread.sleep(20000);
 
 
         while (true) {
             log.info("Querying Prometheus");
             Controller.QueryingPrometheus(g, topoOrder);
-            log.info("Sleeping for 5 seconds");
+            log.info("Sleeping for 1 seconds");
             log.info("******************************************");
             log.info("******************************************");
             log.info("******************************************");
             log.info("******************************************");
-            Thread.sleep(5000);
+            Thread.sleep(1000);
         }
     }
 
 
     static void QueryingPrometheus(Graph g, List<Vertex> topoOrder)
             throws ExecutionException, InterruptedException {
-/*
-        ArrivalRates.arrivalRateTopicGeneral(g.getVertex(0).getG());
+
+       /* ArrivalRates.arrivalRateTopicGeneral(g.getVertex(0).getG());
         ArrivalRates.arrivalRateTopicGeneral(g.getVertex(1).getG());
         ArrivalRates.arrivalRateTopicGeneral(g.getVertex(2).getG());*/
        Util.computeBranchingFactors(g);
@@ -78,10 +78,7 @@ public class Controller implements Runnable{
             getArrivalRate2(g, topoOrder.get(m).getLabel());
             ArrivalRates.queryLatency(topoOrder.get(m).getG());
             BinPack2.scaleAsPerBinPack(topoOrder.get(m).getG());
-
-
         }
-
         //log.info("*********************************************");
     }
 
@@ -104,10 +101,10 @@ public class Controller implements Runnable{
                         m, g.getVertex(m).getG().getKafkaName() );
                 grandParent = false;
                 totalArrivalRate += (g.getVertex(parent).getG().getTotalArrivalRate()) *  g.getBF()[parent][m];
-                if(g.getVertex(parent).getG().isScaled()) {
+               /* if(g.getVertex(parent).getG().isScaled()) {
                     totalArrivalRate +=  (g.getVertex(parent).getG().getTotalLag()/(g.getVertex(parent).getG().getWsla()))
                             * g.getBF()[parent][m];
-                }
+                }*/
             }
         }
 
@@ -118,13 +115,12 @@ public class Controller implements Runnable{
             ArrivalRates.arrivalRateTopicGeneral(g.getVertex(m).getG());
             //ArrivalProducer.callForArrivals(g.getVertex(m).getG());
             //Lag.LagByOffsets(g.getVertex(m).getG());
-            g.getVertex(m).getG().setTotalLag(0);
+           // g.getVertex(m).getG().setTotalLag(0);
 
             log.info("Arrival rate of micorservice {} {}", m, g.getVertex(m).getG().getTotalArrivalRate());
         } else {
             g.getVertex(m).getG().setTotalArrivalRate(totalArrivalRate);
-            g.getVertex(m).getG().setTotalLag(0);
-            //ArrivalRates.arrivalRateTopicGeneral(g.getVertex(m).getG(), true);
+            //g.getVertex(m).getG().setTotalLag(0);
             //Lag.LagByOffsets(g.getVertex(m).getG());
             log.info("Arrival rate of micorservice {} {}", m, g.getVertex(m).getG().getTotalArrivalRate());
         }

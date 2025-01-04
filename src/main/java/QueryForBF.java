@@ -24,15 +24,11 @@ public class QueryForBF {
 
     static double queryForBF(String topicp, String topicc)
             throws ExecutionException, InterruptedException {
-/*
-        String testtopic1i = "http://prometheus-operated:9090/api/v1/query?" +
-                "query=sum(avg_over_time("+ topici+"%5B20s%5D))";
-        String testtopic2 = "http://prometheus-operated:9090/api/v1/query?query=sum(avg_over_time("
-                + topico + "%5B20s%5D))";*/
+
 
 
         String bf = "http://prometheus-operated:9090/api/v1/query?query=" +
-                "(avg(rate(" + topicp + topicc + "_count[10s])/rate(events_latency_" + topicp + "_count[10s])))";
+                "(avg(rate(" + topicp + topicc + "_count[5s])/rate(events_latency_" + topicp + "_count[5s])))";
 
         List<URI> queries = new ArrayList<>();
         try {
