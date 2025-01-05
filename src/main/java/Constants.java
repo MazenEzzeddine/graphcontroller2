@@ -55,12 +55,10 @@ public class Constants {
     }
 
 
-    static String pr = "http://prometheus-operated:9090/api/v1/query?query=" +
-            "1000/(avg(rate(events_latency_sum[2s])/rate(events_latency_count[2s])))";
 
 
-    //  "sum(kafka_consumergroup_lag%7Bconsumergroup=%22testgroup1%22,topic=%22testtopic1%22, namespace=%22kubernetes_namespace%7D)%20by%20(consumergroup,topic)"
-    //sum(kafka_consumergroup_lag{consumergroup=~"$consumergroup",topic=~"$topic", namespace=~"$kubernetes_namespace"}) by (consumergroup, topic)
+
+
 
 
 }
