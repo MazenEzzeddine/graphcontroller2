@@ -93,8 +93,7 @@ public class Controller implements Runnable{
         boolean grandParent = true;
         double totalArrivalRate = 0.0;
         for (int parent = 0; parent < A[m].length; parent++) {
-            //total = 0
-            //
+
             if (A[parent][m] == 1) {
                // g.getVertex(parent).getG().getName() or input topic
                 log.info( " {} {} is a prarent of {} {}", parent, g.getVertex(parent).getG().getKafkaName() ,
@@ -116,7 +115,6 @@ public class Controller implements Runnable{
             //ArrivalProducer.callForArrivals(g.getVertex(m).getG());
             //Lag.LagByOffsets(g.getVertex(m).getG());
            // g.getVertex(m).getG().setTotalLag(0);
-
             log.info("Arrival rate of micorservice {} {}", m, g.getVertex(m).getG().getTotalArrivalRate());
         } else {
             g.getVertex(m).getG().setTotalArrivalRate(totalArrivalRate);
@@ -124,7 +122,6 @@ public class Controller implements Runnable{
             //Lag.LagByOffsets(g.getVertex(m).getG());
             log.info("Arrival rate of micorservice {} {}", m, g.getVertex(m).getG().getTotalArrivalRate());
         }
-
     }
 
 

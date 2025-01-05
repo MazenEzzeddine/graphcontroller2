@@ -226,18 +226,13 @@ public class ConsumerGroup {
         // lag = lag + (arrivalsPerSec - consumedPerSec)
         // lag = max (0, lag)
 
-
-
-
         //TODO
         //Any lag less than mu is not counted,
         totalLag = Math.max(totalLag -  (dynamicAverageMaxConsumptionRate * size), 0);
 
-
-
+         // lag = lamda*DI - µ*DI = 0, µ = 200 events/sec...
         //totalLag = Math.max(totalLag - max, 0);
         //this.totalLag = 0; //totalLag;
-
 
         //eventually equal lag per partition?
         //how about lagPerPartition = Math.max(lagPerPartition -  dynamicAverageMaxConsumptionRate, 0)
