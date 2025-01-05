@@ -244,7 +244,6 @@ public class ConsumerGroup {
         //topicpartitions.get(i).setLag(lagPerPartition);
         for (int i = 0; i < 5; i++) {
             topicpartitions.get(i).setLag((long) (totalLag / 5));
-
             log.info("Lag for partition {} is {}", i, topicpartitions.get(i).getLag());
         }
         // log.info("Lag for partition {} is {}", i, topicpartitions.get(i).getLag());

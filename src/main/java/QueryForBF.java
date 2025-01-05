@@ -25,7 +25,7 @@ public class QueryForBF {
     static double queryForBF(String topicp, String topicc)
             throws ExecutionException, InterruptedException {
 
-
+        // e.g., testtopic1testtopic2_count/events_latency_count
 
         String bf = "http://prometheus-operated:9090/api/v1/query?query=" +
                 "(avg(rate(" + topicp + topicc + "_count[5s])/rate(events_latency_" + topicp + "_count[5s])))";
