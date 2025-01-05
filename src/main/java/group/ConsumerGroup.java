@@ -22,9 +22,25 @@ public class ConsumerGroup {
     ArrayList<Partition> topicpartitions;
     double totalArrivalRate;
     double totalLag;
+
+    public void setDynamicAverageMaxConsumptionRate(double dynamicAverageMaxConsumptionRate) {
+        this.dynamicAverageMaxConsumptionRate = dynamicAverageMaxConsumptionRate;
+    }
+
     double dynamicAverageMaxConsumptionRate;
     double wsla;
     Instant lastUpScaleDecision = Instant.now();
+
+
+    public double getProcessingRate() {
+        return processingRate;
+    }
+
+    public void setProcessingRate(double processingRate) {
+        this.processingRate = processingRate;
+    }
+
+    double processingRate;
 
     public KubernetesClient k8s;
 
@@ -132,6 +148,8 @@ public class ConsumerGroup {
         }
         currentAssignment = assignment;
         tempAssignment = assignment;
+
+        processingRate =0;
     }
 
 
@@ -208,9 +226,17 @@ public class ConsumerGroup {
         // lag = lag + (arrivalsPerSec - consumedPerSec)
         // lag = max (0, lag)
 
+
+
+
+        //TODO
+        //Any lag less than mu is not counted,
         totalLag = Math.max(totalLag -  (dynamicAverageMaxConsumptionRate * size), 0);
+
+
+
         //totalLag = Math.max(totalLag - max, 0);
-        this.totalLag = totalLag;
+        //this.totalLag = 0; //totalLag;
 
 
         //eventually equal lag per partition?
@@ -218,6 +244,7 @@ public class ConsumerGroup {
         //topicpartitions.get(i).setLag(lagPerPartition);
         for (int i = 0; i < 5; i++) {
             topicpartitions.get(i).setLag((long) (totalLag / 5));
+
             log.info("Lag for partition {} is {}", i, topicpartitions.get(i).getLag());
         }
         // log.info("Lag for partition {} is {}", i, topicpartitions.get(i).getLag());

@@ -22,7 +22,9 @@ public class ArrivalRates {
 
 
 
-    static void arrivalRateTopicGeneral(ConsumerGroup g/*, boolean justLag*/) {
+
+
+    static void arrivalRateTopicGeneral(ConsumerGroup g) {
         String topic = g.getInputTopic();
         String cg = g.getKafkaName();
         List<String> arrivalqueries = Constants.getQueriesArrival(topic);
@@ -52,18 +54,8 @@ public class ArrivalRates {
         } catch (URISyntaxException e) {
             e.printStackTrace();
         }
-        /////////////////////////////////////////////////////////////
-/*
-        List<CompletableFuture<String>> partitionslagfuture2 = partitionslag2.stream()
-                .map(target -> client
-                        .sendAsync(
-                                HttpRequest.newBuilder(target).GET().build(),
-                                HttpResponse.BodyHandlers.ofString())
-                        .thenApply(HttpResponse::body))
-                .collect(Collectors.toList());*/
+        //////////////////////////////////////////////////////////////////////////////
 
-
-       /* if (!justLag) {*/
             List<CompletableFuture<String>> partitionsfutures2 = partitions2.stream()
                     .map(target -> client
                             .sendAsync(
@@ -93,14 +85,23 @@ public class ArrivalRates {
             g.setTotalArrivalRate(totalarrivalstopic2);
             log.info("totalArrivalRate for  topic  {} {}",
                     g.getInputTopic(), totalarrivalstopic2);
-      //  }
 
-/*
+
+
+//TODO lag disable for now.
+
+        List<CompletableFuture<String>> partitionslagfuture = partitionslag2.stream()
+                .map(target -> client
+                        .sendAsync(
+                                HttpRequest.newBuilder(target).GET().build(),
+                                HttpResponse.BodyHandlers.ofString())
+                        .thenApply(HttpResponse::body))
+                .collect(Collectors.toList());
          partition2 = 0;
         double totallag2 = 0.0;
         long partitionLag2 = 0L;
 
-        for (CompletableFuture<String> cf : partitionslagfuture2) {
+        for (CompletableFuture<String> cf : partitionslagfuture) {
             try {
                 partitionLag2 = Util.parseJsonArrivalLag(cf.get(), partition2).longValue();
             } catch (InterruptedException | ExecutionException e) {
@@ -113,8 +114,55 @@ public class ArrivalRates {
             //log.info("lag of partition {} is {} :", partition2, partitionLag2);
         }
         log.info("totalLag for topic {} {}", g.getInputTopic(), totallag2);
-        g.setTotalLag(totallag2);*/
+        g.setTotalLag(0.0);
 
+        //g.setTotalLag(totallag2);
+
+    }
+
+
+
+
+    public static void queryLatency(ConsumerGroup g)  {
+
+        String pr = "http://prometheus-operated:9090/api/v1/query?query=" +
+                "1000/(avg(rate(events_latency_"+  g.getInputTopic()+ "_sum[2s])/rate(events_latency_"
+                +g.getInputTopic()+"_count[2s])))";
+
+
+        List<URI> latencies = new ArrayList<>();
+        try {
+            latencies = Arrays.asList(
+                    new URI(pr)
+            );
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        }
+
+        List<CompletableFuture<String>> latenciesFuture = latencies.stream()
+                .map(target -> client
+                        .sendAsync(
+                                HttpRequest.newBuilder(target).GET().build(),
+                                HttpResponse.BodyHandlers.ofString())
+                        .thenApply(HttpResponse::body))
+                .collect(Collectors.toList());
+
+        double lat;
+
+        for (CompletableFuture<String> cf : latenciesFuture) {
+            try {
+                lat = Util.parseJsonLatency(cf.get());
+                if (lat == 0.0 || Double.isNaN(lat)) return;
+                g.setProcessingRate(lat);
+                g.setDynamicAverageMaxConsumptionRate(lat);
+                log.info("processing rate   for CG {} is {}", g.getName() , g.getProcessingRate());
+
+            } catch (Exception e) {
+                // e.printStackTrace();
+                // log.info("Exception occured")
+                return;
+            }
+        }
     }
 
 }

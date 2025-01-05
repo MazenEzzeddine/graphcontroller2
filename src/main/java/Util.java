@@ -44,19 +44,18 @@ public class Util {
 
         int [][] A = g.getAdjMat();
 
-     /*   for (int parent = 0; parent < A.length ;parent++) {
+        for (int parent = 0; parent < A.length ;parent++) {
         for (int child = 0; child < A[parent].length; child++) {
             if (A[parent][child] == 1) {
-                double bf =  QueryForBF.queryForBF(g.getVertex(parent).getG().getInputTopic()+"Total",
-                        g.getVertex(parent).getG().getInputTopic() +     g.getVertex(child).getG().getInputTopic());
+                double bf =  QueryForBF.queryForBF(g.getVertex(parent).getG().getInputTopic(),
+                        /*g.getVertex(parent).getG().getInputTopic() +*/     g.getVertex(child).getG().getInputTopic());
                 g.setBF(parent,child, bf);
                 log.info("BF[{}][{}]={}", parent, child, g.getBF()[parent][child]);
             }
         }
         }
-*/
 
-
+/*
         for (int parent = 0; parent < A.length ;parent++) {
             for (int child = 0; child < A[parent].length; child++) {
                 if (A[parent][child] == 1) {
@@ -65,9 +64,32 @@ public class Util {
                 }
             }
         }
-     /*   g.setBF(0,1, 1.0);
-   g.setBF(1,2, 1.0);*/
+     *//*   g.setBF(0,1, 1.0);
+   g.setBF(1,2, 1.0);*//* */
 
     }
+
+
+
+    static Double parseJsonLatency(String json) {
+        //json string from prometheus
+        //{"status":"success","data":{"resultType":"vector","result":[{"metric":{"topic":"testtopic1"},"value":[1659006264.066,"144.05454545454546"]}]}}
+        try {
+            //log.info(json);
+            JSONObject jsonObject = JSONObject.parseObject(json);
+            JSONObject j2 = (JSONObject) jsonObject.get("data");
+            JSONArray inter = j2.getJSONArray("result");
+            JSONObject jobj = (JSONObject) inter.get(0);
+            JSONArray jreq = jobj.getJSONArray("value");
+       /* log.info("the partition is {}", p);
+        log.info("partition lag  {}",  Double.parseDouble( jreq.getString(1)));*/
+            return Double.parseDouble(jreq.getString(1));
+        } catch (Exception e) {
+            // e.printStackTrace();
+            return 0.0;
+        }
+    }
+
+
 
 }
